@@ -1,0 +1,37 @@
+{
+  "name": "roadmappj-caching-proxy",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "bin": {
+    "task-cli": "bin/caching-proxy"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test -r ts-node/register -r tsconfig-paths/register src/**/*.test.ts",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "prettier --write"
+    ]
+  },
+  "author": {
+    "name": "Yuki Sato",
+    "email": "yuki.sato.dev@gmail.com",
+    "url": "https://github.com/yukisato"
+  },
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^22.4.1",
+    "husky": "^9.1.4",
+    "lint-staged": "^15.2.9",
+    "prettier": "^3.3.3",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "zod": "^3.23.8"
+  }
+}
