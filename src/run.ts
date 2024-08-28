@@ -3,6 +3,7 @@ import {
   getOperationalOptions,
   getServerOptions,
 } from './lib/commandOptionPrser';
+import { program } from 'commander';
 
 export const run = async (argv: string[]) => {
   // Operate the proxy server if the command line arguments are for the operations
@@ -18,6 +19,9 @@ export const run = async (argv: string[]) => {
     listen(serverOptions.port, serverOptions.origin);
     return;
   }
+
+  // If the proper combination of options is passed, display the help
+  program.outputHelp();
 };
 
 export const listen = async (port: number, origin: string) => {
