@@ -58,6 +58,8 @@ curl -I http://localhost:3000/posts/1
   - [ ] when the URI is in the cache, return the cache
   - [ ] when the URI is not in the cache, it fetches and returns the fresh data from the URI
 
+- [x] `connect()` connects to the DB
+  - [x] it returns the same instance when it is called twice because it is a singleton
 - [ ] `getCache()` gets the cache for the given URI
   - [ ] it returns the cache when the URI is in the cache
   - [ ] it returns `null` when the URI is not in the cache

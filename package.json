@@ -22,6 +22,7 @@
   },
   "description": "",
   "devDependencies": {
+    "@types/better-sqlite3": "~7.6.11",
     "@types/node": "^22.4.1",
     "husky": "^9.1.4",
     "lint-staged": "^15.2.9",
@@ -31,6 +32,7 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
+    "better-sqlite3": "^11.2.1",
     "commander": "^12.1.0",
     "zod": "^3.23.8"
   },
