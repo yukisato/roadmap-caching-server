@@ -5,6 +5,11 @@ import {
 import { program } from 'commander';
 
 program
+  .name('caching-proxy')
+  .summary('start and control a local proxy server')
+  .description(
+    `Starts the local proxy server if you speficy ---port and --origin options.\nIf you execute this command with --clear-cache option flag, this command just clears the local proxy cache.`
+  )
   .option('-p, --port <port>', 'specify local server port', '3000')
   .option('-o, --origin <origin>', 'origin server URL')
   .option('--clear-cache', 'set this flag to clear proxy cache');
