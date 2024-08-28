@@ -72,10 +72,10 @@ curl -I http://localhost:3000/posts/1
   - [ ] Firstly checks if the requested URI is already in the cache
   - [ ] it stores the cache in the database when the request is successful
 
-- [ ] Retrieve parameters from the command line
-  - [ ] Accept `--port` optional argument default to `3000`
-  - [ ] Accept `--origin` required argument
-  - [ ] Accept `--clear-cache` optional argument
+- [x] Retrieve parameters from the command line
+  - [x] Accept `--port` optional argument default to `3000`
+  - [x] Accept `--origin` required argument
+  - [x] Accept `--clear-cache` optional argument
 
 ## Testability is low, importance is low
 
