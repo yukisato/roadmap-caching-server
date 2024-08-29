@@ -35,7 +35,7 @@ describe('`initDb()` creates tables', () => {
   });
 });
 
-describe('`storeCache()` stores the data in the cache database', () => {
+describe('`storeCache()` stores the data in the DB', () => {
   let db: Database;
   beforeEach(() => {
     db = initDb();
@@ -45,7 +45,7 @@ describe('`storeCache()` stores the data in the cache database', () => {
   });
 
   describe(`stores proper data`, () => {
-    it('stores ["/path/to/target.html", "test data"] in the cache database', () => {
+    it('stores ["/path/to/target.html", "test data"] in the DB', () => {
       const expected = {
         id: 1,
         uri: '/path/to/target.html',
