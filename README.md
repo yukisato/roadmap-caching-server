@@ -71,9 +71,9 @@ curl -I http://localhost:3000/posts/1
 
   - [x] it stores the data in the DB
 
-- [ ] `clearCache()` deletes the cache data records in the DB
+- [x] `clearCache()` deletes the cache data records in the DB
 
-  - [ ] it deletes all the data in the cache table in the database
+  - [x] it deletes all the data in the cache table in the database
 
 - [ ] Display errors when the request failed
 

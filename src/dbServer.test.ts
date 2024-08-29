@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   cacheTableName,
+  clearCache,
   connect,
   getCache,
   initDb,
@@ -93,5 +94,35 @@ describe('`getCache()` returns a record from the DB if it exists', () => {
 
       assert.equal(getCache('/different/path'), null);
     });
+  });
+});
+
+describe('`clearCache()` deletes the cache data records in the DB', () => {
+  beforeEach(() => {
+    initDb();
+  });
+  afterEach(() => {
+    connect().close();
+  });
+
+  it('deletes all records in the DB', () => {
+    const records = [
+      {
+        uri: '/test1.html',
+        data: 'test data 1',
+      },
+      {
+        uri: '/test2.html',
+        data: 'test data 2',
+      },
+    ];
+    records.forEach(({ uri, data }) => storeCache(uri, data));
+    const stmt = connect().prepare<unknown[], { count: number }>(
+      `SELECT COUNT(*) count FROM ${cacheTableName}`
+    );
+
+    assert.equal(stmt.get()?.count, 2);
+    clearCache();
+    assert.equal(stmt.get()?.count, 0);
   });
 });

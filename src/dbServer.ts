@@ -39,3 +39,8 @@ export const getCache = (uri: string): ProxyCache | null =>
       ProxyCache
     >(`SELECT * FROM ${cacheTableName} WHERE uri = ?`)
     .get(uri) ?? null;
+
+export const clearCache = () =>
+  connect().exec(
+    `DELETE FROM ${cacheTableName}; DELETE FROM sqlite_sequence WHERE name = '${cacheTableName}';`
+  );
