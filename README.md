@@ -37,10 +37,10 @@ curl -I http://localhost:3000/posts/1
 ## TODO (along with TDD)
 
 - [ ] The caching proxy server starts listening on the specified port
-  - [ ] When the requested URI is in the cache, return the cache
+  - [ ] When the path in the requested URL is in the cache, return the cache
     - [ ] it returns the cached response
     - [ ] it returns the header `X-Cache: HIT`
-  - [ ] When the requested URI is not in the cache, fetch and returnd the fresh data from the URI
+  - [ ] When the path in the requested URL is not in the cache, fetch and returnd the fresh data from the URL
     - [ ] it returns the fresh response
     - [ ] it returns the header `X-Cache: HIT`
 - [ ] If the response is from the origin server, response with the header `X-Cache: MISS`
@@ -53,20 +53,20 @@ curl -I http://localhost:3000/posts/1
 - [ ] `run()` starts the proxy server or clear the cache depending on the command line arguments
   - [ ] it starts the proxycvzz server when `--port` and `--origin` options are passed
   - [ ] it clears the cache when the `--clear-cache` option is passed
-- [ ] `retrieveURI()` fetches the URI and return the response
+- [ ] `retrieveUrl()` fetches the given URL and return the response
 
-  - [ ] when the URI is in the cache, return the cache
-  - [ ] when the URI is not in the cache, it fetches and returns the fresh data from the URI
+  - [ ] when the path in the URL is in the cache, return the cache
+  - [ ] when the path in the URL is not in the cache, it fetches and returns the fresh data from the URL
 
 - [x] `connect()` connects to the DB
   - [x] it returns the same instance when it is called twice because it is a singleton
 - [x] `initDb()` creates tables
   - [x] it creates a cache table
-- [x] `getCache()` gets the cache for the given URI
-  - [x] when there is a record with the provided URI in the DB
-    - [x] it returns the cache when the URI is in the cache
-  - [x] when there is no record that matches the provided URI in the DB
-    - [x] it returns `null` when the URI is not in the cache
+- [x] `getCache()` gets the cache for the given path
+  - [x] when there is a record with the provided path in the DB
+    - [x] it returns the cache when the path is in the cache
+  - [x] when there is no record that matches the provided path in the DB
+    - [x] it returns `null` when the path is not in the cache
 - [x] `storeCache()` stores the data in the DB
 
   - [x] it stores the data in the DB
@@ -77,7 +77,7 @@ curl -I http://localhost:3000/posts/1
 
 - [ ] Display errors when the request failed
 
-  - [ ] Firstly checks if the requested URI is already in the cache
+  - [ ] Firstly checks if the path in the requested URL is already in the cache
   - [ ] it stores the cache in the database when the request is successful
 
 - [x] Retrieve parameters from the command line
@@ -92,7 +92,7 @@ curl -I http://localhost:3000/posts/1
   - [ ] it prints the error message when the request fails
 - [ ] The proxy server returns the response with the proper cache header
 
-  - [ ] it adds the header `X-Cache: HIT` when the URI is in the cache
-  - [ ] it adds the header `X-Cache: MISS` when the URI is NOT in the cache
+  - [ ] it adds the header `X-Cache: HIT` when the path in the URL is in the cache
+  - [ ] it adds the header `X-Cache: MISS` when the path in the URL is NOT in the cache
 
 - [ ] print the response

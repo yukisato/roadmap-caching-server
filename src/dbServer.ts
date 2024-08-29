@@ -17,7 +17,7 @@ export const initDb = (): Database.Database => {
   db.prepare(
     `CREATE TABLE IF NOT EXISTS ${cacheTableName} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            uri TEXT UNIQUE NOT NULL,
+            path TEXT UNIQUE NOT NULL,
             data TEXT NOT NULL
             )`
   ).run();
@@ -25,20 +25,20 @@ export const initDb = (): Database.Database => {
   return db;
 };
 
-export const storeCache = (uri: string, data: string): Database.RunResult =>
+export const storeCache = (path: string, data: string): Database.RunResult =>
   connect()
     .prepare<
       [string, string]
-    >(`INSERT INTO ${cacheTableName} (uri, data) VALUES (?, ?)`)
-    .run(uri, data);
+    >(`INSERT INTO ${cacheTableName} (path, data) VALUES (?, ?)`)
+    .run(path, data);
 
-export const getCache = (uri: string): ProxyCache | null =>
+export const getCache = (path: string): ProxyCache | null =>
   connect()
     .prepare<
       [string],
       ProxyCache
-    >(`SELECT * FROM ${cacheTableName} WHERE uri = ?`)
-    .get(uri) ?? null;
+    >(`SELECT * FROM ${cacheTableName} WHERE path = ?`)
+    .get(path) ?? null;
 
 export const clearCache = () =>
   connect().exec(

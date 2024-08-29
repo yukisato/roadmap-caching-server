@@ -49,13 +49,13 @@ describe('`storeCache()` stores the data in the DB', () => {
     it('stores ["/path/to/target.html", "test data"] in the DB', () => {
       const expected = {
         id: 1,
-        uri: '/path/to/target.html',
+        path: '/path/to/target.html',
         data: 'test data',
       };
-      storeCache(expected.uri, expected.data);
+      storeCache(expected.path, expected.data);
       const actual = db
-        .prepare(`SELECT * FROM ${cacheTableName} WHERE uri = ?`)
-        .get(expected.uri);
+        .prepare(`SELECT * FROM ${cacheTableName} WHERE path = ?`)
+        .get(expected.path);
 
       assert.deepEqual(actual, expected);
     });
@@ -71,26 +71,26 @@ describe('`getCache()` returns a record from the DB if it exists', () => {
     db.close();
   });
 
-  describe(`when there is a record with the provided URI in the DB`, () => {
-    it('returns { id: 1, uri: "/path/to/target.html", "test data" } when the data is in the DB and the same uri is provided', () => {
+  describe(`when there is a record with the provided path in the DB`, () => {
+    it('returns { id: 1, path: "/path/to/target.html", "test data" } when the data is in the DB and the same path is provided', () => {
       const expected = {
         id: 1,
-        uri: '/path/to/target.html',
+        path: '/path/to/target.html',
         data: 'test data',
       };
-      storeCache(expected.uri, expected.data);
+      storeCache(expected.path, expected.data);
 
-      assert.deepEqual(getCache(expected.uri), expected);
+      assert.deepEqual(getCache(expected.path), expected);
     });
   });
 
-  describe(`when there is no record that matches the provided URI in the DB`, () => {
-    it('returns `null` when the DB contains only one data { uri: "/path/to/target.html", "test data" } and "/different/path" is passed', () => {
+  describe(`when there is no record that matches the provided path in the DB`, () => {
+    it('returns `null` when the DB contains only one data { path: "/path/to/target.html", "test data" } and "/different/path" is passed', () => {
       const record = {
-        uri: '/path/to/target.html',
+        path: '/path/to/target.html',
         data: 'test data',
       };
-      storeCache(record.uri, record.data);
+      storeCache(record.path, record.data);
 
       assert.equal(getCache('/different/path'), null);
     });
@@ -108,15 +108,15 @@ describe('`clearCache()` deletes the cache data records in the DB', () => {
   it('deletes all records in the DB', () => {
     const records = [
       {
-        uri: '/test1.html',
+        path: '/test1.html',
         data: 'test data 1',
       },
       {
-        uri: '/test2.html',
+        path: '/test2.html',
         data: 'test data 2',
       },
     ];
-    records.forEach(({ uri, data }) => storeCache(uri, data));
+    records.forEach(({ path, data }) => storeCache(path, data));
     const stmt = connect().prepare<unknown[], { count: number }>(
       `SELECT COUNT(*) count FROM ${cacheTableName}`
     );
