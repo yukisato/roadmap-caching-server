@@ -58,14 +58,22 @@ curl -I http://localhost:3000/posts/1
   - [ ] when the URI is in the cache, return the cache
   - [ ] when the URI is not in the cache, it fetches and returns the fresh data from the URI
 
-- [ ] `getCache()` gets the cache for the given URI
-  - [ ] it returns the cache when the URI is in the cache
-  - [ ] it returns `null` when the URI is not in the cache
-- [ ] `storeCache()` stores the data in the cache database
+- [x] `connect()` connects to the DB
+  - [x] it returns the same instance when it is called twice because it is a singleton
+- [x] `initDb()` creates tables
+  - [x] it creates a cache table
+- [x] `getCache()` gets the cache for the given URI
+  - [x] when there is a record with the provided URI in the DB
+    - [x] it returns the cache when the URI is in the cache
+  - [x] when there is no record that matches the provided URI in the DB
+    - [x] it returns `null` when the URI is not in the cache
+- [x] `storeCache()` stores the data in the DB
 
-  - [ ] it stores the data in the cache database
+  - [x] it stores the data in the DB
 
-- [ ] `clearCache()` clears the data in the cache database
+- [x] `clearCache()` deletes the cache data records in the DB
+
+  - [x] it deletes all the data in the cache table in the database
 
 - [ ] Display errors when the request failed
 
