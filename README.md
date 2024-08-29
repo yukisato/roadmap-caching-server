@@ -75,8 +75,6 @@ curl -I http://localhost:3000/posts/1
 
   - [ ] it deletes all the data in the cache table in the database
 
-- [ ] `clearCache()` clears the data in the DB
-
 - [ ] Display errors when the request failed
 
   - [ ] Firstly checks if the requested URI is already in the cache
