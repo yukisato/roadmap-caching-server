@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3';
 import { ProxyCache } from '@/types/proxyCache';
 
-export const options = {};
+export const options: Database.Options = {};
 export const cacheTableName = 'cache';
 // For a singleton DB instance
 let db: Database.Database;
