@@ -53,10 +53,10 @@ curl -I http://localhost:3000/posts/1
 - [ ] `run()` starts the proxy server or clear the cache depending on the command line arguments
   - [ ] it starts the proxycvzz server when `--port` and `--origin` options are passed
   - [ ] it clears the cache when the `--clear-cache` option is passed
-- [ ] `retrieveUrl()` fetches the given URL and return the response
+- [x] `getCachedOrFetchUrl()` fetches the given URL and return the response
 
-  - [ ] when the path in the URL is in the cache, return the cache
-  - [ ] when the path in the URL is not in the cache, it fetches and returns the fresh data from the URL
+  - [x] when the path in the URL is in the cache, return the cache
+  - [x] when the path in the URL is not in the cache, it fetches and returns the fresh data from the URL
 
 - [x] `connect()` connects to the DB
   - [x] it returns the same instance when it is called twice because it is a singleton
