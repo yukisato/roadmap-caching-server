@@ -67,15 +67,15 @@ curl -I http://localhost:3000/posts/1
     - [x] it returns the cache when the URI is in the cache
   - [x] when there is no record that matches the provided URI in the DB
     - [x] it returns `null` when the URI is not in the cache
-- [x] `storeCache()` stores the data in the cache database
+- [x] `storeCache()` stores the data in the DB
 
-  - [x] it stores the data in the cache database
+  - [x] it stores the data in the DB
 
-- [ ] `clearCache()` deletes the cache data records in the cache database
+- [ ] `clearCache()` deletes the cache data records in the DB
 
   - [ ] it deletes all the data in the cache table in the database
 
-- [ ] `clearCache()` clears the data in the cache database
+- [ ] `clearCache()` clears the data in the DB
 
 - [ ] Display errors when the request failed
 
