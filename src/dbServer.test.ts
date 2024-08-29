@@ -1,6 +1,12 @@
 import { afterEach, beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { cacheTableName, connect, initDb, storeCache } from '@/dbServer';
+import {
+  cacheTableName,
+  connect,
+  getCache,
+  initDb,
+  storeCache,
+} from '@/dbServer';
 import { Database } from 'better-sqlite3';
 
 describe('`connect()` connects to the DB', () => {
@@ -51,6 +57,41 @@ describe('`storeCache()` stores the data in the cache database', () => {
         .get(expected.uri);
 
       assert.deepEqual(actual, expected);
+    });
+  });
+});
+
+describe('`getCache()` returns a record from the DB if it exists', () => {
+  let db: Database;
+  beforeEach(() => {
+    db = initDb();
+  });
+  afterEach(() => {
+    db.close();
+  });
+
+  describe(`when there is a record with the provided URI in the DB`, () => {
+    it('returns { id: 1, uri: "/path/to/target.html", "test data" } when the data is in the DB and the same uri is provided', () => {
+      const expected = {
+        id: 1,
+        uri: '/path/to/target.html',
+        data: 'test data',
+      };
+      storeCache(expected.uri, expected.data);
+
+      assert.deepEqual(getCache(expected.uri), expected);
+    });
+  });
+
+  describe(`when there is no record that matches the provided URI in the DB`, () => {
+    it('returns `null` when the DB contains only one data { uri: "/path/to/target.html", "test data" } and "/different/path" is passed', () => {
+      const record = {
+        uri: '/path/to/target.html',
+        data: 'test data',
+      };
+      storeCache(record.uri, record.data);
+
+      assert.equal(getCache('/different/path'), null);
     });
   });
 });

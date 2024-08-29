@@ -1,4 +1,5 @@
 import Database from 'better-sqlite3';
+import { ProxyCache } from '@/types/proxyCache';
 
 export const options = {};
 export const cacheTableName = 'cache';
@@ -30,3 +31,11 @@ export const storeCache = (uri: string, data: string): Database.RunResult =>
       [string, string]
     >(`INSERT INTO ${cacheTableName} (uri, data) VALUES (?, ?)`)
     .run(uri, data);
+
+export const getCache = (uri: string): ProxyCache | null =>
+  connect()
+    .prepare<
+      [string],
+      ProxyCache
+    >(`SELECT * FROM ${cacheTableName} WHERE uri = ?`)
+    .get(uri) ?? null;
