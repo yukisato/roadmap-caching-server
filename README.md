@@ -65,9 +65,9 @@ curl -I http://localhost:3000/posts/1
 - [ ] `getCache()` gets the cache for the given URI
   - [ ] it returns the cache when the URI is in the cache
   - [ ] it returns `null` when the URI is not in the cache
-- [ ] `storeCache()` stores the data in the cache database
+- [x] `storeCache()` stores the data in the cache database
 
-  - [ ] it stores the data in the cache database
+  - [x] it stores the data in the cache database
 
 - [ ] `clearCache()` clears the data in the cache database
 

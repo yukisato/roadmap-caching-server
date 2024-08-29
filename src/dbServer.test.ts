@@ -1,6 +1,7 @@
-import { describe, it } from 'node:test';
+import { afterEach, beforeEach, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { cacheTableName, connect, initDb } from '@/dbServer';
+import { cacheTableName, connect, initDb, storeCache } from '@/dbServer';
+import { Database } from 'better-sqlite3';
 
 describe('`connect()` connects to the DB', () => {
   it('returns the same instance when it is called twice because it is a singleton', () => {
@@ -25,5 +26,31 @@ describe('`initDb()` creates tables', () => {
     initDb();
     // @ts-ignore for get() argument
     assert.equal(stmt.get()?.name, cacheTableName);
+  });
+});
+
+describe('`storeCache()` stores the data in the cache database', () => {
+  let db: Database;
+  beforeEach(() => {
+    db = initDb();
+  });
+  afterEach(() => {
+    db.close();
+  });
+
+  describe(`stores proper data`, () => {
+    it('stores ["/path/to/target.html", "test data"] in the cache database', () => {
+      const expected = {
+        id: 1,
+        uri: '/path/to/target.html',
+        data: 'test data',
+      };
+      storeCache(expected.uri, expected.data);
+      const actual = db
+        .prepare(`SELECT * FROM ${cacheTableName} WHERE uri = ?`)
+        .get(expected.uri);
+
+      assert.deepEqual(actual, expected);
+    });
   });
 });

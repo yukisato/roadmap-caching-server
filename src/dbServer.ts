@@ -23,3 +23,10 @@ export const initDb = (): Database.Database => {
 
   return db;
 };
+
+export const storeCache = (uri: string, data: string): Database.RunResult =>
+  connect()
+    .prepare<
+      [string, string]
+    >(`INSERT INTO ${cacheTableName} (uri, data) VALUES (?, ?)`)
+    .run(uri, data);
