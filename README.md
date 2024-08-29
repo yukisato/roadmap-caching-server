@@ -60,6 +60,8 @@ curl -I http://localhost:3000/posts/1
 
 - [x] `connect()` connects to the DB
   - [x] it returns the same instance when it is called twice because it is a singleton
+- [x] `initDb()` creates tables
+  - [x] it creates a cache table
 - [ ] `getCache()` gets the cache for the given URI
   - [ ] it returns the cache when the URI is in the cache
   - [ ] it returns `null` when the URI is not in the cache
