@@ -1,4 +1,4 @@
-import { clearCache } from '@/lib/clearCache';
+import { clearCache } from '@/dbServer';
 import {
   getOperationalOptions,
   getServerOptions,
