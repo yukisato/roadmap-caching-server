@@ -5,6 +5,7 @@ import {
   clearCache,
   connect,
   getCache,
+  getOriginUrl,
   initDb,
   originUrlTableName,
   storeCache,
@@ -149,5 +150,30 @@ describe('`storeOriginUrl()` stores the origin URL in the DB', () => {
 
   it('throws InvalidUrlError when an non-URL string is provided', () => {
     assert.throws(() => storeOriginUrl('non-url'), InvalidUrlError);
+  });
+});
+
+describe('`getOriginUrl()` returns the origin URL from the DB', () => {
+  beforeEach(() => {
+    initDb();
+  });
+  afterEach(() => {
+    connect().close();
+  });
+
+  it('returns the origin URL from the DB', () => {
+    const originUrl = 'https://github.com';
+    const db = connect();
+    const stmt = db.prepare<[], { url: string }>(
+      `SELECT url FROM ${originUrlTableName} WHERE id = 1`
+    );
+
+    assert.equal(stmt.get()?.url, undefined);
+    storeOriginUrl(originUrl);
+    assert.equal(getOriginUrl(), originUrl);
+  });
+
+  it('returns `null` if there is no origin URL in the DB', () => {
+    assert.equal(getOriginUrl(), null);
   });
 });

@@ -75,3 +75,11 @@ export const storeOriginUrl = (originUrl: string) => {
     );
   }
 };
+
+export const getOriginUrl = () =>
+  connect()
+    .prepare<
+      [],
+      { url: string }
+    >(`SELECT url FROM ${originUrlTableName} WHERE id = 1`)
+    .get()?.url ?? null;
