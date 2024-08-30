@@ -23,14 +23,17 @@ export const getCachedOrFetchUrl = async (
   if (cache) return { data: cache.data, isCache: true };
 
   // If the path is NOT in the cache, fetch and return the data
-  const response = await fetch(url);
-  if (response.ok) {
-    const data = await response.text();
-    storeCache(path, data);
+  try {
+    const response = await fetch(url);
+    if (response.ok) {
+      const data = await response.text();
+      storeCache(path, data);
 
-    return { data, isCache: false };
+      return { data, isCache: false };
+    }
+    // If the request fails, throw an error
+    throw new RequestFailedError(response!, urlString);
+  } catch (error) {
+    throw error;
   }
-
-  // If the request fails, throw an error
-  throw new RequestFailedError(response, urlString);
 };
