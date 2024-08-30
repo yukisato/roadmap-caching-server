@@ -8,6 +8,7 @@ import {
   initDb,
   originUrlTableName,
   storeCache,
+  storeOriginUrl,
 } from '@/dbServer';
 import { Database } from 'better-sqlite3';
 
@@ -122,5 +123,26 @@ describe('`clearCache()` deletes the cache data records in the DB', () => {
     assert.equal(stmt.get()?.count, 2);
     clearCache();
     assert.equal(stmt.get()?.count, 0);
+  });
+});
+
+describe('`storeOriginUrl()` stores the origin URL in the DB', () => {
+  beforeEach(() => {
+    initDb();
+  });
+  afterEach(() => {
+    connect().close();
+  });
+
+  it('stores the origin URL in the DB', () => {
+    const originUrl = 'https://github.com';
+    const db = connect();
+    const stmt = db.prepare<[], { url: string }>(
+      `SELECT url FROM ${originUrlTableName} WHERE id = 1`
+    );
+
+    assert.equal(stmt.get()?.url, undefined);
+    storeOriginUrl(originUrl);
+    assert.equal(stmt.get()?.url, originUrl);
   });
 });

@@ -49,3 +49,23 @@ export const clearCache = () =>
   connect().exec(
     `DELETE FROM ${cacheTableName}; DELETE FROM sqlite_sequence WHERE name = '${cacheTableName}';`
   );
+
+export const storeOriginUrl = (originUrl: string) => {
+  const db = connect();
+  const count = db
+    .prepare<
+      [],
+      { count: number }
+    >(`SELECT COUNT(*) count FROM ${originUrlTableName}`)
+    .get()?.count;
+
+  if (count === 0) {
+    db.prepare(
+      `INSERT INTO ${originUrlTableName} (id, url) VALUES (1, ?);`
+    ).run(originUrl);
+  } else {
+    db.prepare(`UPDATE ${originUrlTableName} SET url = ? WHERE id = 1;`).run(
+      originUrl
+    );
+  }
+};
