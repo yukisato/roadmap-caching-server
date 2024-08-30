@@ -17,7 +17,6 @@ export const connect = (): Database.Database => {
 
 export const initDb = (): Database.Database => {
   const db = connect();
-  db.pragma('journal_mode = WAL');
   db.prepare(
     `CREATE TABLE IF NOT EXISTS ${cacheTableName} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
