@@ -5,10 +5,14 @@ import {
   clearCache,
   connect,
   getCache,
+  getOriginUrl,
   initDb,
+  originUrlTableName,
   storeCache,
+  storeOriginUrl,
 } from '@/dbServer';
 import { Database } from 'better-sqlite3';
+import { InvalidUrlError } from './lib/errors';
 
 describe('`connect()` connects to the DB', () => {
   it('returns the same instance when it is called twice because it is a singleton', () => {
@@ -19,20 +23,17 @@ describe('`connect()` connects to the DB', () => {
 });
 
 describe('`initDb()` creates tables', () => {
-  it('creates a cache table', () => {
+  it('creates a cache table and an origin_url table', () => {
     const db = connect();
-    const stmt = db
-      .prepare<
-        [string],
-        { name: string }
-      >(`SELECT name FROM sqlite_master WHERE type='table' AND name=?`)
-      .bind(cacheTableName);
+    const stmt = db.prepare<[string], { name: string }>(
+      `SELECT name FROM sqlite_master WHERE type='table' AND name=?`
+    );
 
-    // @ts-ignore for get() argument
-    assert.equal(stmt.get()?.name, undefined);
+    assert.equal(stmt.get(cacheTableName)?.name, undefined);
+    assert.equal(stmt.get(originUrlTableName)?.name, undefined);
     initDb();
-    // @ts-ignore for get() argument
-    assert.equal(stmt.get()?.name, cacheTableName);
+    assert.equal(stmt.get(cacheTableName)?.name, cacheTableName);
+    assert.equal(stmt.get(originUrlTableName)?.name, originUrlTableName);
   });
 });
 
@@ -124,5 +125,55 @@ describe('`clearCache()` deletes the cache data records in the DB', () => {
     assert.equal(stmt.get()?.count, 2);
     clearCache();
     assert.equal(stmt.get()?.count, 0);
+  });
+});
+
+describe('`storeOriginUrl()` stores the origin URL in the DB', () => {
+  beforeEach(() => {
+    initDb();
+  });
+  afterEach(() => {
+    connect().close();
+  });
+
+  it('stores the origin URL in the DB', () => {
+    const originUrl = 'https://github.com';
+    const db = connect();
+    const stmt = db.prepare<[], { url: string }>(
+      `SELECT url FROM ${originUrlTableName} WHERE id = 1`
+    );
+
+    assert.equal(stmt.get()?.url, undefined);
+    storeOriginUrl(originUrl);
+    assert.equal(stmt.get()?.url, originUrl);
+  });
+
+  it('throws InvalidUrlError when an non-URL string is provided', () => {
+    assert.throws(() => storeOriginUrl('non-url'), InvalidUrlError);
+  });
+});
+
+describe('`getOriginUrl()` returns the origin URL from the DB', () => {
+  beforeEach(() => {
+    initDb();
+  });
+  afterEach(() => {
+    connect().close();
+  });
+
+  it('returns the origin URL from the DB', () => {
+    const originUrl = 'https://github.com';
+    const db = connect();
+    const stmt = db.prepare<[], { url: string }>(
+      `SELECT url FROM ${originUrlTableName} WHERE id = 1`
+    );
+
+    assert.equal(stmt.get()?.url, undefined);
+    storeOriginUrl(originUrl);
+    assert.equal(getOriginUrl(), originUrl);
+  });
+
+  it('returns `null` if there is no origin URL in the DB', () => {
+    assert.equal(getOriginUrl(), null);
   });
 });
