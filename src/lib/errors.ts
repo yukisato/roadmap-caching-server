@@ -6,7 +6,7 @@ export class RequestFailedError extends Error {
     protected urlString: string
   ) {
     super(
-      `Request failed: ${response.status} ${response.statusText} ${urlString}`
+      `request failed: ${response.status} ${response.statusText} ${urlString}`
     );
   }
 
@@ -17,14 +17,14 @@ export class RequestFailedError extends Error {
 
 export class InvalidUrlError extends Error {
   constructor(urlString: string) {
-    super(`Invalid URL: ${urlString}`);
+    super(`invalid URL: ${urlString}`);
   }
 }
 
 export class NoOriginUrlError extends Error {
   constructor() {
     super(
-      `No origin URL is set in the ${originUrlTableName} table in the database`
+      `no origin URL is set in the ${originUrlTableName} table in the database`
     );
   }
 }
