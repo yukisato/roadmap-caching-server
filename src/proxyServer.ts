@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import { getCachedOrFetchUrl } from '@/lib/getCachedOrFetchUrl';
 import { InvalidUrlError, RequestFailedError } from '@/lib/errors';
-import { getOriginUrl } from '@/dbServer';
+import { getOriginUrl, initDb, storeOriginUrl } from '@/dbServer';
+import express from 'express';
+import { Server } from 'node:http';
 
 export const getHandler = async (req: Request, res: Response) => {
   const origin = getOriginUrl();
@@ -33,4 +35,20 @@ export const getHandler = async (req: Request, res: Response) => {
   }
 
   return res;
+};
+
+export const initExpress = () => {
+  const app = express();
+  app.get(/.*/, getHandler);
+
+  return app;
+};
+
+export const startProxyServer = (port: number, origin: string): Server => {
+  initDb();
+  storeOriginUrl(origin);
+
+  return initExpress().listen(port, () => {
+    console.log(`Proxy server started on port ${port}. Origin: ${origin}`);
+  });
 };
