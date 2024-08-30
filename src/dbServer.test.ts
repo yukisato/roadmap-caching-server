@@ -11,6 +11,7 @@ import {
   storeOriginUrl,
 } from '@/dbServer';
 import { Database } from 'better-sqlite3';
+import { InvalidUrlError } from './lib/errors';
 
 describe('`connect()` connects to the DB', () => {
   it('returns the same instance when it is called twice because it is a singleton', () => {
@@ -144,5 +145,9 @@ describe('`storeOriginUrl()` stores the origin URL in the DB', () => {
     assert.equal(stmt.get()?.url, undefined);
     storeOriginUrl(originUrl);
     assert.equal(stmt.get()?.url, originUrl);
+  });
+
+  it('throws InvalidUrlError when an non-URL string is provided', () => {
+    assert.throws(() => storeOriginUrl('non-url'), InvalidUrlError);
   });
 });
