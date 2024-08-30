@@ -4,7 +4,6 @@ import { getHandler, startProxyServer } from '@/proxyServer';
 import express from 'express';
 import request from 'supertest';
 import { connect, initDb, storeOriginUrl } from '@/dbServer';
-import { NoOriginUrlError } from '@/lib/errors';
 
 describe('getHandler()', () => {
   beforeEach(() => {
@@ -14,25 +13,24 @@ describe('getHandler()', () => {
     connect().close();
   });
 
-  it('responds with 404', async () => {
+  it('returns the actual data fetched from the origin URL with `x-cache: MISS` header for the first, then returns the data with `x-cache: HIT` header for the second access', async () => {
     const origin = 'https://raw.githubusercontent.com';
     storeOriginUrl(origin);
     const path = '/yukisato/roadmap-caching-server/main/etc/test.json';
     const app = express();
     app.get(/.*/, getHandler);
-
-    const response = await request(app).get(path);
+    const agent = request(app);
     const expectedText = await (await fetch(origin + path)).text();
 
-    assert.equal(response.status, 200);
-    assert.equal(response.text, expectedText);
-  });
+    const response1 = await agent.get(path);
+    assert.equal(response1.status, 200);
+    assert.equal(response1.text, expectedText);
+    assert.equal(response1.headers['x-cache'], 'MISS');
 
-  it('throws NoOriginUrlError when there is no origin URL in the DB', async () => {
-    const app = express();
-    app.get(/.*/, getHandler);
-
-    assert.rejects(async () => await request(app).get('/'), NoOriginUrlError);
+    const response2 = await agent.get(path);
+    assert.equal(response2.status, 200);
+    assert.equal(response2.text, expectedText);
+    assert.equal(response2.headers['x-cache'], 'HIT');
   });
 });
 

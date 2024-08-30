@@ -3,7 +3,7 @@ import { ProxyCache } from '@/types/proxyCache';
 import { InvalidUrlError } from '@/lib/errors';
 import { z } from 'zod';
 
-export const options: Database.Options = { verbose: console.log };
+export const options: Database.Options = {};
 export const cacheTableName = 'cache';
 export const originUrlTableName = 'origin_url';
 
