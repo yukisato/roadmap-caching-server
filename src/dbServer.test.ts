@@ -24,7 +24,10 @@ describe('`connect()` connects to the DB', () => {
 
 describe('`initDb()` creates tables', () => {
   it('creates a cache table and an origin_url table', () => {
-    const db = connect();
+    const db = initDb();
+    db.prepare(`DROP TABLE IF EXISTS ${cacheTableName}`).run();
+    db.prepare(`DROP TABLE IF EXISTS ${originUrlTableName}`).run();
+
     const stmt = db.prepare<[string], { name: string }>(
       `SELECT name FROM sqlite_master WHERE type='table' AND name=?`
     );
@@ -34,6 +37,8 @@ describe('`initDb()` creates tables', () => {
     initDb();
     assert.equal(stmt.get(cacheTableName)?.name, cacheTableName);
     assert.equal(stmt.get(originUrlTableName)?.name, originUrlTableName);
+
+    db.close();
   });
 });
 
