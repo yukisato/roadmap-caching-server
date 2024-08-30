@@ -1,12 +1,17 @@
 import { Request, Response } from 'express';
 import { getCachedOrFetchUrl } from '@/lib/getCachedOrFetchUrl';
-import { InvalidUrlError, RequestFailedError } from '@/lib/errors';
+import {
+  InvalidUrlError,
+  NoOriginUrlError,
+  RequestFailedError,
+} from '@/lib/errors';
 import { getOriginUrl, initDb, storeOriginUrl } from '@/dbServer';
 import express from 'express';
 import { Server } from 'node:http';
 
 export const getHandler = async (req: Request, res: Response) => {
   const origin = getOriginUrl();
+  if (!origin) throw new NoOriginUrlError();
 
   try {
     const { data, isCache } = await getCachedOrFetchUrl(
