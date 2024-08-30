@@ -4,7 +4,6 @@ import { getHandler, startProxyServer } from '@/proxyServer';
 import express from 'express';
 import request from 'supertest';
 import { connect, initDb, storeOriginUrl } from '@/dbServer';
-import { NoOriginUrlError } from '@/lib/errors';
 
 describe('getHandler()', () => {
   beforeEach(() => {
@@ -32,13 +31,6 @@ describe('getHandler()', () => {
     assert.equal(response2.status, 200);
     assert.equal(response2.text, expectedText);
     assert.equal(response2.headers['x-cache'], 'HIT');
-  });
-
-  it('throws NoOriginUrlError when there is no origin URL in the DB', async () => {
-    const app = express();
-    app.get(/.*/, getHandler);
-
-    assert.rejects(async () => await request(app).get('/'), NoOriginUrlError);
   });
 });
 

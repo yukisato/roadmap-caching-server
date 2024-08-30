@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
 import { getCachedOrFetchUrl } from '@/lib/getCachedOrFetchUrl';
 import {
   InvalidUrlError,
@@ -9,9 +9,13 @@ import { getOriginUrl, initDb, storeOriginUrl } from '@/dbServer';
 import express from 'express';
 import { Server } from 'node:http';
 
-export const getHandler = async (req: Request, res: Response) => {
+export const getHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const origin = getOriginUrl();
-  if (!origin) throw new NoOriginUrlError();
+  if (!origin) return next(new NoOriginUrlError());
 
   try {
     const { data, isCache } = await getCachedOrFetchUrl(
@@ -20,31 +24,40 @@ export const getHandler = async (req: Request, res: Response) => {
     res
       .append('X-Cache', isCache ? 'HIT' : 'MISS')
       .status(200)
-      .send(data);
+      .send(data)
+      .end();
   } catch (error) {
-    if (error instanceof RequestFailedError) {
-      console.error(error.message);
-      res.status(error.status);
-    } else if (error instanceof InvalidUrlError) {
-      console.error(error.message);
-      res.status(400).send(error.message);
-    } else if (error instanceof Error) {
-      console.error(error.message);
-      res.status(500).send(error.message);
-    } else {
-      console.error(error);
-      res.status(500).send(error);
-    }
-  } finally {
-    res.end();
+    return next(error);
   }
+};
 
-  return res;
+export const errorMiddleware: ErrorRequestHandler = (
+  err: Error,
+  req: Request,
+  res: Response
+) => {
+  if (err instanceof RequestFailedError) {
+    console.error(err.message);
+    res.status(err.status).send(err.message);
+  } else if (err instanceof InvalidUrlError) {
+    console.error(err.message);
+    res.status(400).send(err.message);
+  } else if (err instanceof NoOriginUrlError) {
+    console.error(err.message);
+    res.sendStatus(500);
+  } else if (err instanceof Error) {
+    console.error(err.message);
+    res.sendStatus(500);
+  } else {
+    console.error(err);
+    res.sendStatus(500);
+  }
 };
 
 export const initExpress = () => {
   const app = express();
   app.get(/.*/, getHandler);
+  app.use(errorMiddleware);
 
   return app;
 };
