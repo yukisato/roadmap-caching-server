@@ -3,6 +3,8 @@ import { ProxyCache } from '@/types/proxyCache';
 
 export const options: Database.Options = {};
 export const cacheTableName = 'cache';
+export const originUrlTableName = 'origin_url';
+
 // For a singleton DB instance
 let db: Database.Database;
 export const connect = (): Database.Database => {
@@ -20,6 +22,9 @@ export const initDb = (): Database.Database => {
             path TEXT UNIQUE NOT NULL,
             data TEXT NOT NULL
             )`
+  ).run();
+  db.prepare(
+    `CREATE TABLE IF NOT EXISTS ${originUrlTableName} (id INTEGER NOT NULL, url TEXT NOT NULL)`
   ).run();
 
   return db;

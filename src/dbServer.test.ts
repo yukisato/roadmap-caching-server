@@ -6,6 +6,7 @@ import {
   connect,
   getCache,
   initDb,
+  originUrlTableName,
   storeCache,
 } from '@/dbServer';
 import { Database } from 'better-sqlite3';
@@ -19,20 +20,17 @@ describe('`connect()` connects to the DB', () => {
 });
 
 describe('`initDb()` creates tables', () => {
-  it('creates a cache table', () => {
+  it('creates a cache table and an origin_url table', () => {
     const db = connect();
-    const stmt = db
-      .prepare<
-        [string],
-        { name: string }
-      >(`SELECT name FROM sqlite_master WHERE type='table' AND name=?`)
-      .bind(cacheTableName);
+    const stmt = db.prepare<[string], { name: string }>(
+      `SELECT name FROM sqlite_master WHERE type='table' AND name=?`
+    );
 
-    // @ts-ignore for get() argument
-    assert.equal(stmt.get()?.name, undefined);
+    assert.equal(stmt.get(cacheTableName)?.name, undefined);
+    assert.equal(stmt.get(originUrlTableName)?.name, undefined);
     initDb();
-    // @ts-ignore for get() argument
-    assert.equal(stmt.get()?.name, cacheTableName);
+    assert.equal(stmt.get(cacheTableName)?.name, cacheTableName);
+    assert.equal(stmt.get(originUrlTableName)?.name, originUrlTableName);
   });
 });
 
