@@ -92,11 +92,11 @@ export const storeOriginUrl = (originUrl: string) => {
         .get()?.count;
 
       if (count === 0) {
-        db.prepare(
+        db.prepare<[string]>(
           `INSERT INTO ${originUrlTableName} (id, url) VALUES (1, ?);`
         ).run(url);
       } else {
-        db.prepare(
+        db.prepare<[string]>(
           `UPDATE ${originUrlTableName} SET url = ? WHERE id = 1;`
         ).run(url);
       }
