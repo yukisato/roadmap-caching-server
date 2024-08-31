@@ -1,4 +1,4 @@
-import Database from 'better-sqlite3';
+import Database, { SqliteError } from 'better-sqlite3';
 import { ProxyCache } from '@/types/proxyCache';
 import { InvalidUrlError } from '@/lib/errors';
 import { z } from 'zod';
@@ -94,3 +94,25 @@ export const getOriginUrl = () =>
       { url: string }
     >(`SELECT url FROM ${originUrlTableName} WHERE id = 1`)
     .get()?.url ?? null;
+
+/**
+ * Handles errors that occur within a database transaction.
+ *
+ * @param transaction - the transaction to handle errors for
+ */
+export const transactionErrorHandler = (transaction: Database.Transaction) => {
+  try {
+    transaction();
+  } catch (error) {
+    if (error instanceof SqliteError) {
+      console.error(error.code, error.name, error.message);
+      throw error;
+    } else if (error instanceof Error) {
+      console.error(error.message);
+      throw error;
+    } else {
+      console.error(error);
+      throw new Error(String(error));
+    }
+  }
+};
