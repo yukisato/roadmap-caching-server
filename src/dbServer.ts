@@ -4,7 +4,9 @@ import { InvalidUrlError } from '@/lib/errors';
 import { z } from 'zod';
 import path from 'node:path';
 
-export const options: Database.Options = {};
+export const options: Database.Options = {
+  verbose: process.env.SQLITE_DEBUG ? console.log : undefined,
+};
 export const cacheTableName = 'cache';
 export const originUrlTableName = 'origin_url';
 const dbFilename = path.resolve(__dirname, '../db.sqlite');
