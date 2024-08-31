@@ -1,7 +1,7 @@
 import { connect, initDb } from '@/dbServer';
 import assert from 'node:assert/strict';
 import { afterEach, beforeEach, describe, it } from 'node:test';
-import { getCachedOrFetchUrl } from './getCachedOrFetchUrl';
+import { getCachedOrFetchUrl } from '@/lib/getCachedOrFetchUrl';
 import { InvalidUrlError, RequestFailedError } from '@/lib/errors';
 
 describe('getCachedOrFetchUrl()', () => {
