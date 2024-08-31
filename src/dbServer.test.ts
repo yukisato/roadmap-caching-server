@@ -9,6 +9,7 @@ import {
   getOriginUrl,
   initDb,
   originUrlTableName,
+  resetTables,
   storeCache,
   storeOriginUrl,
 } from '@/dbServer';
@@ -41,6 +42,32 @@ describe('`createTablesIfNotExists()` creates tables', () => {
     assert.equal(stmt.get(originUrlTableName)?.name, originUrlTableName);
 
     db.close();
+  });
+});
+
+describe('`resetTables()` deletes all records in the DB', () => {
+  beforeEach(() => {
+    initDb();
+  });
+  afterEach(() => {
+    connect().close();
+  });
+
+  it('deletes all records in origin_url and cache table', () => {
+    const record = {
+      id: 1,
+      path: '/test/path',
+      data: 'test data',
+    };
+    const originUrl = 'https://github.com';
+    storeCache(record.path, record.data);
+    storeOriginUrl(originUrl);
+
+    assert.deepEqual(getCache(record.path), record);
+    assert.equal(getOriginUrl(), originUrl);
+    resetTables();
+    assert.equal(getCache(record.path), null);
+    assert.equal(getOriginUrl(), null);
   });
 });
 
