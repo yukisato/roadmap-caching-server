@@ -4,6 +4,7 @@ import {
   cacheTableName,
   clearCache,
   connect,
+  createTablesIfNotExists,
   getCache,
   getOriginUrl,
   initDb,
@@ -11,7 +12,6 @@ import {
   storeCache,
   storeOriginUrl,
 } from '@/dbServer';
-import { Database } from 'better-sqlite3';
 import { InvalidUrlError } from './lib/errors';
 
 describe('`connect()` connects to the DB', () => {
@@ -22,11 +22,13 @@ describe('`connect()` connects to the DB', () => {
   });
 });
 
-describe('`initDb()` creates tables', () => {
+describe('`createTablesIfNotExists()` creates tables', () => {
   it('creates a cache table and an origin_url table', () => {
-    const db = initDb();
-    db.prepare(`DROP TABLE IF EXISTS ${cacheTableName}`).run();
-    db.prepare(`DROP TABLE IF EXISTS ${originUrlTableName}`).run();
+    const db = connect();
+    db.transaction(() => {
+      db.prepare(`DROP TABLE IF EXISTS ${cacheTableName}`).run();
+      db.prepare(`DROP TABLE IF EXISTS ${originUrlTableName}`).run();
+    })();
 
     const stmt = db.prepare<[string], { name: string }>(
       `SELECT name FROM sqlite_master WHERE type='table' AND name=?`
@@ -34,7 +36,7 @@ describe('`initDb()` creates tables', () => {
 
     assert.equal(stmt.get(cacheTableName)?.name, undefined);
     assert.equal(stmt.get(originUrlTableName)?.name, undefined);
-    initDb();
+    createTablesIfNotExists();
     assert.equal(stmt.get(cacheTableName)?.name, cacheTableName);
     assert.equal(stmt.get(originUrlTableName)?.name, originUrlTableName);
 
@@ -43,23 +45,16 @@ describe('`initDb()` creates tables', () => {
 });
 
 describe('`storeCache()` stores the data in the DB', () => {
-  let db: Database;
-  beforeEach(() => {
-    db = initDb();
-  });
-  afterEach(() => {
-    db.close();
-  });
-
   describe(`stores proper data`, () => {
     it('stores ["/path/to/target.html", "test data"] in the DB', () => {
+      initDb();
       const expected = {
         id: 1,
         path: '/path/to/target.html',
         data: 'test data',
       };
       storeCache(expected.path, expected.data);
-      const actual = db
+      const actual = connect()
         .prepare(`SELECT * FROM ${cacheTableName} WHERE path = ?`)
         .get(expected.path);
 
@@ -69,12 +64,11 @@ describe('`storeCache()` stores the data in the DB', () => {
 });
 
 describe('`getCache()` returns a record from the DB if it exists', () => {
-  let db: Database;
   beforeEach(() => {
-    db = initDb();
+    initDb();
   });
   afterEach(() => {
-    db.close();
+    connect().close();
   });
 
   describe(`when there is a record with the provided path in the DB`, () => {

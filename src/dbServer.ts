@@ -22,6 +22,12 @@ export const connect = (() => {
   };
 })();
 
+export const initDb = (): void => {
+  configureDb();
+  createTablesIfNotExists();
+  resetTables();
+};
+
 export const configureDb = () => {
   const db = connect();
   db.pragma('journal_mode = WAL');
@@ -30,9 +36,8 @@ export const configureDb = () => {
   db.pragma('busy_timeout = 5000');
 };
 
-export const initDb = (): Database.Database => {
+export const createTablesIfNotExists = (): void => {
   const db = connect();
-
   transactionErrorHandler(
     db.transaction(() => {
       db.prepare(
@@ -45,6 +50,21 @@ export const initDb = (): Database.Database => {
       db.prepare(
         `CREATE TABLE IF NOT EXISTS ${originUrlTableName} (id INTEGER NOT NULL, url TEXT NOT NULL)`
       ).run();
+    })
+  );
+};
+
+/**
+ * Deletes all records in the cache table and origin_url table.
+ * Clears the sqlite_sequence table for the cache and origin_url tabless.
+ *
+ * @returns BetterSqlite3.Database
+ */
+export const resetTables = (): void => {
+  console.log('Resetting tables...');
+  const db = connect();
+  transactionErrorHandler(
+    db.transaction(() => {
       db.prepare(`DELETE FROM ${cacheTableName}`).run();
       db.prepare(`DELETE FROM ${originUrlTableName}`).run();
       db.prepare<[string, string]>(
@@ -52,16 +72,18 @@ export const initDb = (): Database.Database => {
       ).run(cacheTableName, originUrlTableName);
     })
   );
-
-  return db;
 };
 
-export const storeCache = (path: string, data: string): Database.RunResult =>
-  connect()
-    .prepare<
-      [string, string]
-    >(`INSERT INTO ${cacheTableName} (path, data) VALUES (?, ?)`)
-    .run(path, data);
+export const storeCache = (path: string, data: string): void => {
+  const db = connect();
+  transactionErrorHandler(
+    db.transaction(() => {
+      db.prepare<[string, string]>(
+        `INSERT INTO ${cacheTableName} (path, data) VALUES (?, ?)`
+      ).run(path, data);
+    })
+  );
+};
 
 export const getCache = (path: string): ProxyCache | null =>
   connect()
@@ -71,11 +93,17 @@ export const getCache = (path: string): ProxyCache | null =>
     >(`SELECT * FROM ${cacheTableName} WHERE path = ?`)
     .get(path) ?? null;
 
-export const clearCache = () =>
-  connect().exec(
-    `DELETE FROM ${cacheTableName}; DELETE FROM sqlite_sequence WHERE name = '${cacheTableName}';`
+export const clearCache = () => {
+  const db = connect();
+  transactionErrorHandler(
+    db.transaction(() => {
+      db.prepare(`DELETE FROM ${cacheTableName}`).run();
+      db.prepare(
+        `DELETE FROM sqlite_sequence WHERE name = '${cacheTableName}'`
+      );
+    })
   );
-
+};
 export const originUrlSchema = z.string().url();
 export const storeOriginUrl = (originUrl: string) => {
   const url = originUrlSchema.safeParse(originUrl)?.data;
