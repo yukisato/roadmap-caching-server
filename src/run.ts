@@ -2,7 +2,7 @@ import { clearCache } from '@/dbServer';
 import {
   getOperationalOptions,
   getServerOptions,
-} from './lib/commandOptionPrser';
+} from '@/lib/commandOptionPrser';
 import { program } from 'commander';
 import { startProxyServer } from './proxyServer';
 
