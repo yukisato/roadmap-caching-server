@@ -24,21 +24,26 @@ export const connect = (() => {
 
 export const initDb = (): Database.Database => {
   const db = connect();
-  db.prepare(
-    `CREATE TABLE IF NOT EXISTS ${cacheTableName} (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            path TEXT UNIQUE NOT NULL,
-            data TEXT NOT NULL
-            )`
-  ).run();
-  db.prepare(
-    `CREATE TABLE IF NOT EXISTS ${originUrlTableName} (id INTEGER NOT NULL, url TEXT NOT NULL)`
-  ).run();
-  db.prepare(`DELETE FROM ${cacheTableName}`).run();
-  db.prepare(`DELETE FROM ${originUrlTableName}`).run();
-  db.prepare<[string, string]>(
-    `DELETE FROM sqlite_sequence WHERE name IN (?, ?)`
-  ).run(cacheTableName, originUrlTableName);
+
+  transactionErrorHandler(
+    db.transaction(() => {
+      db.prepare(
+        `CREATE TABLE IF NOT EXISTS ${cacheTableName} (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        path TEXT UNIQUE NOT NULL,
+        data TEXT NOT NULL
+        )`
+      ).run();
+      db.prepare(
+        `CREATE TABLE IF NOT EXISTS ${originUrlTableName} (id INTEGER NOT NULL, url TEXT NOT NULL)`
+      ).run();
+      db.prepare(`DELETE FROM ${cacheTableName}`).run();
+      db.prepare(`DELETE FROM ${originUrlTableName}`).run();
+      db.prepare<[string, string]>(
+        `DELETE FROM sqlite_sequence WHERE name IN (?, ?)`
+      ).run(cacheTableName, originUrlTableName);
+    })
+  );
 
   return db;
 };
@@ -69,22 +74,26 @@ export const storeOriginUrl = (originUrl: string) => {
   if (!url) throw new InvalidUrlError(originUrl);
 
   const db = connect();
-  const count = db
-    .prepare<
-      [],
-      { count: number }
-    >(`SELECT COUNT(*) count FROM ${originUrlTableName}`)
-    .get()?.count;
+  transactionErrorHandler(
+    db.transaction(() => {
+      const count = db
+        .prepare<
+          [],
+          { count: number }
+        >(`SELECT COUNT(*) count FROM ${originUrlTableName}`)
+        .get()?.count;
 
-  if (count === 0) {
-    db.prepare(
-      `INSERT INTO ${originUrlTableName} (id, url) VALUES (1, ?);`
-    ).run(url);
-  } else {
-    db.prepare(`UPDATE ${originUrlTableName} SET url = ? WHERE id = 1;`).run(
-      url
-    );
-  }
+      if (count === 0) {
+        db.prepare(
+          `INSERT INTO ${originUrlTableName} (id, url) VALUES (1, ?);`
+        ).run(url);
+      } else {
+        db.prepare(
+          `UPDATE ${originUrlTableName} SET url = ? WHERE id = 1;`
+        ).run(url);
+      }
+    })
+  );
 };
 
 export const getOriginUrl = () =>
