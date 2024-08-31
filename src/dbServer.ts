@@ -11,13 +11,16 @@ export const cacheTableName = 'cache';
 export const originUrlTableName = 'origin_url';
 const dbFilename = path.resolve(__dirname, '../db.sqlite');
 
-// For a singleton DB instance
-let db: Database.Database;
-export const connect = (): Database.Database => {
-  if (!db || !db.open) db = new Database(dbFilename, options);
+export const connect = (() => {
+  // Singleton instance
+  let db: Database.Database;
 
-  return db;
-};
+  return (): Database.Database => {
+    if (!db || !db.open) db = new Database(dbFilename, options);
+
+    return db;
+  };
+})();
 
 export const initDb = (): Database.Database => {
   const db = connect();
