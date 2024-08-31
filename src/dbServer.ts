@@ -61,7 +61,6 @@ export const createTablesIfNotExists = (): void => {
  * @returns BetterSqlite3.Database
  */
 export const resetTables = (): void => {
-  console.log('Resetting tables...');
   const db = connect();
   transactionErrorHandler(
     db.transaction(() => {
