@@ -10,6 +10,7 @@ import {
   setOriginUrl,
 } from '@/lib/cacheManager';
 import { v4 as uuidV4 } from 'uuid';
+import { Server } from 'node:http';
 
 describe('`clearCacheHandler()` clears the cache', () => {
   it('clears the cache', async () => {
@@ -71,7 +72,10 @@ describe('`startProxyServer()` starts the proxy server', () => {
     const port = 3010;
     const originUrl = 'https://raw.githubusercontent.com';
     const path = '/yukisato/roadmap-caching-server/main/etc/test.json';
-    const server = startProxyServer(port, originUrl);
+    let server: Server;
+    await new Promise((resolve) => {
+      server = startProxyServer(port, originUrl, () => resolve(null));
+    });
 
     const actual = await fetch(`http://localhost:${port}${path}`);
     const expected = await fetch(originUrl + path);
@@ -79,6 +83,6 @@ describe('`startProxyServer()` starts the proxy server', () => {
     assert.ok(actual.ok);
     assert.equal(await actual.text(), await expected.text());
 
-    server.close();
+    server!.close();
   });
 });

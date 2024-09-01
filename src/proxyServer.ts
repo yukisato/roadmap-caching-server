@@ -67,11 +67,16 @@ export const initExpress = () => {
   return app;
 };
 
-export const startProxyServer = (port: number, origin: string): Server => {
+export const startProxyServer = (
+  port: number,
+  origin: string,
+  callback?: () => void
+): Server => {
   clearCache();
   setOriginUrl(origin);
 
   return initExpress().listen(port, () => {
     console.log(`Proxy server started on port ${port}. Origin: ${origin}`);
+    if (callback) callback();
   });
 };
