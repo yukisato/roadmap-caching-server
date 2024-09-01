@@ -31,7 +31,7 @@ export const getCachedOrFetchUrl = async (
       return { data, isCache: false };
     }
     // If the request fails, throw an error
-    throw new RequestFailedError(response!, urlString);
+    throw new RequestFailedError(response, urlString);
   } catch (error) {
     throw error;
   }
