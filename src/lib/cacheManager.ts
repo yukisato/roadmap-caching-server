@@ -1,5 +1,5 @@
 export type CacheData = {
-  port?: string;
+  port?: number;
   originUrl?: string;
   cache: Record<string, string>;
 };
@@ -12,10 +12,10 @@ export const setOriginUrl = (url: string): void => {
   data.originUrl = url;
 };
 export const getOriginUrl = (): string | undefined => data.originUrl;
-export const setPort = (url: string): void => {
-  data.port = url;
+export const setPort = (port: number): void => {
+  data.port = port;
 };
-export const getPort = (): string | undefined => data.port;
+export const getPort = (): number | undefined => data.port;
 export const setCache = (path: string, text: string): void => {
   data.cache[path] = text;
 };

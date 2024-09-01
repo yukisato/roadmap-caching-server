@@ -39,7 +39,7 @@ describe('`clearCache()` removes the data in the cache', () => {
 
 describe('`setCache()` and `getCache()` stores/retrieves the data in the cache', () => {
   it('set and get the data in the cache', () => {
-    const expected = '3000';
+    const expected = 3000;
     clearCache();
 
     assert.notEqual(getPort(), expected);
