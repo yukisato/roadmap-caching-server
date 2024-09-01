@@ -1,9 +1,34 @@
 import assert from 'node:assert/strict';
 import { beforeEach, afterEach, describe, it } from 'node:test';
-import { getHandler, startProxyServer } from '@/proxyServer';
+import { clearCacheHandler, getHandler, startProxyServer } from '@/proxyServer';
 import express from 'express';
 import request from 'supertest';
-import { clearCache, setOriginUrl } from '@/lib/cacheManager';
+import {
+  clearCache,
+  getCache,
+  setCache,
+  setOriginUrl,
+} from '@/lib/cacheManager';
+import { v4 as uuidV4 } from 'uuid';
+
+describe('`clearCacheHandler()` clears the cache', () => {
+  it('clears the cache', async () => {
+    const testData = {
+      path: '/path/to/target.html',
+      data: uuidV4(),
+    };
+
+    const app = express();
+    app.get('/clearCache', clearCacheHandler);
+    const agent = request(app);
+
+    setCache(testData.path, testData.data);
+    assert.equal(getCache(testData.path), testData.data);
+    const response = await agent.get('/clearCache');
+    assert.equal(response.status, 204);
+    assert.equal(getCache(testData.path), null);
+  });
+});
 
 describe('getHandler()', () => {
   beforeEach(() => {

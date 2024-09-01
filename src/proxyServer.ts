@@ -30,6 +30,10 @@ export const getHandler = async (
     return next(error);
   }
 };
+export const clearCacheHandler = async (_: Request, res: Response) => {
+  clearCache();
+  res.sendStatus(204);
+};
 
 export const errorMiddleware: ErrorRequestHandler = (
   err: Error,
@@ -56,6 +60,7 @@ export const errorMiddleware: ErrorRequestHandler = (
 
 export const initExpress = () => {
   const app = express();
+  app.get('/clearCache', clearCacheHandler);
   app.get(/.*/, getHandler);
   app.use(errorMiddleware);
 
