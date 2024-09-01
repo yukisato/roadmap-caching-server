@@ -1,8 +1,12 @@
 import { clearCache } from '@/lib/cacheManager';
 import assert from 'node:assert/strict';
-import { afterEach, beforeEach, describe, it } from 'node:test';
-import { getCachedOrFetchUrl } from '@/lib/fetchUtils';
+import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
+import { callClearCacheApi, getCachedOrFetchUrl } from '@/lib/fetchUtils';
 import { InvalidUrlError, RequestFailedError } from '@/lib/errors';
+import { v4 as uuidV4 } from 'uuid';
+import { getCache, setCache } from '@/lib/cacheManager';
+import { startProxyServer } from '@/proxyServer';
+import { Server } from 'node:http';
 
 describe('getCachedOrFetchUrl()', () => {
   beforeEach(() => {
@@ -45,5 +49,43 @@ describe('getCachedOrFetchUrl()', () => {
         RequestFailedError
       );
     });
+  });
+});
+
+describe('callClearCacheApi() calls and clears the cache indirectly', () => {
+  let server: Server;
+  before(async () => {
+    await new Promise((resolve) => {
+      server = startProxyServer(3010, 'https://github.com/yukisato', () =>
+        resolve(null)
+      );
+    });
+  });
+  after(async () => {
+    if (!server) return;
+    await new Promise((resolve) => server.close(() => resolve(null)));
+  });
+
+  it('deletes all the cache data', async () => {
+    clearCache();
+    const testData = [
+      {
+        path: '/path/to/target.html',
+        data: uuidV4(),
+      },
+      {
+        path: '/path/to/target2.html',
+        data: uuidV4(),
+      },
+    ];
+    testData.forEach(({ path, data }) => {
+      setCache(path, data);
+    });
+
+    assert.equal(getCache(testData[0].path), testData[0].data);
+    assert.equal(getCache(testData[1].path), testData[1].data);
+    await callClearCacheApi();
+    assert.equal(getCache(testData[0].path), null);
+    assert.equal(getCache(testData[1].path), null);
   });
 });
