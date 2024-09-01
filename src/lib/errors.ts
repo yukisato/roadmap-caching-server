@@ -1,5 +1,3 @@
-import { originUrlTableName } from '@/dbServer';
-
 export class RequestFailedError extends Error {
   constructor(
     protected response: Response,
@@ -23,8 +21,6 @@ export class InvalidUrlError extends Error {
 
 export class NoOriginUrlError extends Error {
   constructor() {
-    super(
-      `no origin URL is set in the ${originUrlTableName} table in the database`
-    );
+    super(`no origin URL is set in the cache`);
   }
 }

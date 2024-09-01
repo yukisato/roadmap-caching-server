@@ -1,4 +1,4 @@
-import { connect, initDb } from '@/dbServer';
+import { clearCache } from '@/lib/cacheManager';
 import assert from 'node:assert/strict';
 import { afterEach, beforeEach, describe, it } from 'node:test';
 import { getCachedOrFetchUrl } from '@/lib/fetchUtils';
@@ -6,10 +6,10 @@ import { InvalidUrlError, RequestFailedError } from '@/lib/errors';
 
 describe('getCachedOrFetchUrl()', () => {
   beforeEach(() => {
-    initDb();
+    clearCache();
   });
   afterEach(() => {
-    connect().close();
+    clearCache();
   });
 
   describe('when data is in the cache', () => {
