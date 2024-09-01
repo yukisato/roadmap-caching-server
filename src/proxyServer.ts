@@ -1,5 +1,5 @@
 import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
-import { getCachedOrFetchUrl } from '@/lib/getCachedOrFetchUrl';
+import { getCachedOrFetchUrl } from '@/lib/fetchUtils';
 import {
   InvalidUrlError,
   NoOriginUrlError,
