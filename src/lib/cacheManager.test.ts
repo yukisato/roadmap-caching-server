@@ -1,4 +1,10 @@
-import { clearCache, getCache, setCache } from '@/lib/cacheManager';
+import {
+  clearCache,
+  getCache,
+  getOriginUrl,
+  setCache,
+  setOriginUrl,
+} from '@/lib/cacheManager';
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { v4 as uuidV4 } from 'uuid';
@@ -26,5 +32,15 @@ describe('`clearCache()` removes the data in the cache', () => {
     setCache(expected.path, expected.data);
     clearCache();
     assert.equal(getCache(expected.path), null);
+  });
+});
+
+describe('`setOriginUrl()` and `getOriginUrl()` stores/retrieves the data in the originUrl', () => {
+  it('set and get the data in the originUrl', () => {
+    const expected = 'https://github.com/' + uuidV4();
+
+    assert.notEqual(getOriginUrl(), expected);
+    setOriginUrl(expected);
+    assert.equal(getOriginUrl(), expected);
   });
 });
