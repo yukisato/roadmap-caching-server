@@ -1,10 +1,9 @@
 export type CacheData = {
-  originUrl: string | undefined;
+  originUrl?: string;
   cache: Record<string, string>;
 };
 
 const data: CacheData = {
-  originUrl: undefined,
   cache: {},
 };
 
