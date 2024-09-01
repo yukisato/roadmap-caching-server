@@ -5,7 +5,12 @@ import {
   NoOriginUrlError,
   RequestFailedError,
 } from '@/lib/errors';
-import { clearCache, getOriginUrl, setOriginUrl } from '@/lib/cacheManager';
+import {
+  clearCache,
+  getOriginUrl,
+  setOriginUrl,
+  setPort,
+} from '@/lib/cacheManager';
 import express from 'express';
 import { Server } from 'node:http';
 
@@ -73,6 +78,7 @@ export const startProxyServer = (
   callback?: () => void
 ): Server => {
   clearCache();
+  setPort(port);
   setOriginUrl(origin);
 
   return initExpress().listen(port, () => {
