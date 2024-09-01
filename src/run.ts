@@ -1,16 +1,16 @@
-import { clearCache } from '@/dbServer';
 import {
   getOperationalOptions,
   getServerOptions,
 } from '@/lib/commandOptionPrser';
 import { program } from 'commander';
-import { startProxyServer } from './proxyServer';
+import { startProxyServer } from '@/proxyServer';
+import { callClearCacheApi } from '@/lib/fetchUtils';
 
 export const run = async (argv: string[]) => {
   // Operate the proxy server if the command line arguments are for the operations
   const operationalOptions = getOperationalOptions(argv);
   if (operationalOptions?.clearCache) {
-    clearCache();
+    callClearCacheApi();
     return;
   }
 

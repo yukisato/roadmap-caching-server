@@ -1,4 +1,4 @@
-import { getCache, storeCache } from '@/dbServer';
+import { getCache, getPort, setCache } from '@/lib/cacheManager';
 import { z } from 'zod';
 import { InvalidUrlError, RequestFailedError } from '@/lib/errors';
 
@@ -18,21 +18,30 @@ export const getCachedOrFetchUrl = async (
   const url = new URL(data);
   const path = url.pathname + url.search;
 
-  // If the path is in the cache, return the cache
   const cache = getCache(path);
-  if (cache) return { data: cache.data, isCache: true };
+  if (cache) return { data: cache, isCache: true };
 
   // If the path is NOT in the cache, fetch and return the data
   try {
     const response = await fetch(url);
     if (response.ok) {
       const data = await response.text();
-      storeCache(path, data);
+      setCache(path, data);
 
       return { data, isCache: false };
     }
     // If the request fails, throw an error
-    throw new RequestFailedError(response!, urlString);
+    throw new RequestFailedError(response, urlString);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const callClearCacheApi = async () => {
+  const apiUrl = `http://localhost:${getPort()}/clearCache`;
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) throw new RequestFailedError(response, apiUrl);
   } catch (error) {
     throw error;
   }

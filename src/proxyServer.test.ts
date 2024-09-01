@@ -1,21 +1,47 @@
 import assert from 'node:assert/strict';
-import { beforeEach, afterEach, describe, it } from 'node:test';
-import { getHandler, startProxyServer } from '@/proxyServer';
+import { beforeEach, afterEach, describe, it, before, after } from 'node:test';
+import { clearCacheHandler, getHandler, startProxyServer } from '@/proxyServer';
 import express from 'express';
 import request from 'supertest';
-import { connect, initDb, storeOriginUrl } from '@/dbServer';
+import {
+  clearCache,
+  getCache,
+  setCache,
+  setOriginUrl,
+} from '@/lib/cacheManager';
+import { v4 as uuidV4 } from 'uuid';
+import { Server } from 'node:http';
+
+describe('`clearCacheHandler()` clears the cache', () => {
+  it('clears the cache', async () => {
+    const testData = {
+      path: '/path/to/target.html',
+      data: uuidV4(),
+    };
+
+    const app = express();
+    app.get('/clearCache', clearCacheHandler);
+    const agent = request(app);
+
+    setCache(testData.path, testData.data);
+    assert.equal(getCache(testData.path), testData.data);
+    const response = await agent.get('/clearCache');
+    assert.equal(response.status, 204);
+    assert.equal(getCache(testData.path), null);
+  });
+});
 
 describe('getHandler()', () => {
   beforeEach(() => {
-    initDb();
+    clearCache();
   });
   afterEach(() => {
-    connect().close();
+    clearCache();
   });
 
   it('returns the actual data fetched from the origin URL with `x-cache: MISS` header for the first, then returns the data with `x-cache: HIT` header for the second access', async () => {
     const origin = 'https://raw.githubusercontent.com';
-    storeOriginUrl(origin);
+    setOriginUrl(origin);
     const path = '/yukisato/roadmap-caching-server/main/etc/test.json';
     const app = express();
     app.get(/.*/, getHandler);
@@ -35,25 +61,27 @@ describe('getHandler()', () => {
 });
 
 describe('`startProxyServer()` starts the proxy server', () => {
-  beforeEach(() => {
-    initDb();
+  const port = 3010;
+  const originUrl = 'https://raw.githubusercontent.com';
+  const path = '/yukisato/roadmap-caching-server/main/etc/test.json';
+  let server: Server;
+
+  before(async () => {
+    clearCache();
+    await new Promise((resolve) => {
+      server = startProxyServer(port, originUrl, () => resolve(null));
+    });
   });
-  afterEach(() => {
-    connect().close();
+  after(async () => {
+    clearCache();
+    await new Promise((resolve) => server.close(() => resolve(null)));
   });
 
   it('fetches data from the origin server', async () => {
-    const port = 3010;
-    const originUrl = 'https://raw.githubusercontent.com';
-    const path = '/yukisato/roadmap-caching-server/main/etc/test.json';
-    const server = startProxyServer(port, originUrl);
-
     const actual = await fetch(`http://localhost:${port}${path}`);
     const expected = await fetch(originUrl + path);
 
     assert.ok(actual.ok);
     assert.equal(await actual.text(), await expected.text());
-
-    server.close();
   });
 });

@@ -1,11 +1,16 @@
 import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
-import { getCachedOrFetchUrl } from '@/lib/getCachedOrFetchUrl';
+import { getCachedOrFetchUrl } from '@/lib/fetchUtils';
 import {
   InvalidUrlError,
   NoOriginUrlError,
   RequestFailedError,
 } from '@/lib/errors';
-import { getOriginUrl, initDb, storeOriginUrl } from '@/dbServer';
+import {
+  clearCache,
+  getOriginUrl,
+  setOriginUrl,
+  setPort,
+} from '@/lib/cacheManager';
 import express from 'express';
 import { Server } from 'node:http';
 
@@ -29,6 +34,10 @@ export const getHandler = async (
   } catch (error) {
     return next(error);
   }
+};
+export const clearCacheHandler = async (_: Request, res: Response) => {
+  clearCache();
+  res.sendStatus(204);
 };
 
 export const errorMiddleware: ErrorRequestHandler = (
@@ -56,17 +65,24 @@ export const errorMiddleware: ErrorRequestHandler = (
 
 export const initExpress = () => {
   const app = express();
+  app.get('/clearCache', clearCacheHandler);
   app.get(/.*/, getHandler);
   app.use(errorMiddleware);
 
   return app;
 };
 
-export const startProxyServer = (port: number, origin: string): Server => {
-  initDb();
-  storeOriginUrl(origin);
+export const startProxyServer = (
+  port: number,
+  origin: string,
+  callback?: () => void
+): Server => {
+  clearCache();
+  setPort(port);
+  setOriginUrl(origin);
 
   return initExpress().listen(port, () => {
     console.log(`Proxy server started on port ${port}. Origin: ${origin}`);
+    if (callback) callback();
   });
 };
