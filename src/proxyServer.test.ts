@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { beforeEach, afterEach, describe, it } from 'node:test';
+import { beforeEach, afterEach, describe, it, before, after } from 'node:test';
 import { clearCacheHandler, getHandler, startProxyServer } from '@/proxyServer';
 import express from 'express';
 import request from 'supertest';
@@ -61,28 +61,27 @@ describe('getHandler()', () => {
 });
 
 describe('`startProxyServer()` starts the proxy server', () => {
-  beforeEach(() => {
-    clearCache();
-  });
-  afterEach(() => {
-    clearCache();
-  });
+  const port = 3010;
+  const originUrl = 'https://raw.githubusercontent.com';
+  const path = '/yukisato/roadmap-caching-server/main/etc/test.json';
+  let server: Server;
 
-  it('fetches data from the origin server', async () => {
-    const port = 3010;
-    const originUrl = 'https://raw.githubusercontent.com';
-    const path = '/yukisato/roadmap-caching-server/main/etc/test.json';
-    let server: Server;
+  before(async () => {
+    clearCache();
     await new Promise((resolve) => {
       server = startProxyServer(port, originUrl, () => resolve(null));
     });
+  });
+  after(async () => {
+    clearCache();
+    await new Promise((resolve) => server.close(() => resolve(null)));
+  });
 
+  it('fetches data from the origin server', async () => {
     const actual = await fetch(`http://localhost:${port}${path}`);
     const expected = await fetch(originUrl + path);
 
     assert.ok(actual.ok);
     assert.equal(await actual.text(), await expected.text());
-
-    server!.close();
   });
 });
