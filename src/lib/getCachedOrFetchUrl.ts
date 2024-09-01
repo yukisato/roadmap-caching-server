@@ -1,4 +1,4 @@
-import { getCache, storeCache } from '@/dbServer';
+import { getCache, setCache } from '@/lib/cacheManager';
 import { z } from 'zod';
 import { InvalidUrlError, RequestFailedError } from '@/lib/errors';
 
@@ -18,16 +18,15 @@ export const getCachedOrFetchUrl = async (
   const url = new URL(data);
   const path = url.pathname + url.search;
 
-  // If the path is in the cache, return the cache
   const cache = getCache(path);
-  if (cache) return { data: cache.data, isCache: true };
+  if (cache) return { data: cache, isCache: true };
 
   // If the path is NOT in the cache, fetch and return the data
   try {
     const response = await fetch(url);
     if (response.ok) {
       const data = await response.text();
-      storeCache(path, data);
+      setCache(path, data);
 
       return { data, isCache: false };
     }

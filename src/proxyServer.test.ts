@@ -3,19 +3,19 @@ import { beforeEach, afterEach, describe, it } from 'node:test';
 import { getHandler, startProxyServer } from '@/proxyServer';
 import express from 'express';
 import request from 'supertest';
-import { connect, initDb, storeOriginUrl } from '@/dbServer';
+import { clearCache, setOriginUrl } from '@/lib/cacheManager';
 
 describe('getHandler()', () => {
   beforeEach(() => {
-    initDb();
+    clearCache();
   });
   afterEach(() => {
-    connect().close();
+    clearCache();
   });
 
   it('returns the actual data fetched from the origin URL with `x-cache: MISS` header for the first, then returns the data with `x-cache: HIT` header for the second access', async () => {
     const origin = 'https://raw.githubusercontent.com';
-    storeOriginUrl(origin);
+    setOriginUrl(origin);
     const path = '/yukisato/roadmap-caching-server/main/etc/test.json';
     const app = express();
     app.get(/.*/, getHandler);
@@ -36,10 +36,10 @@ describe('getHandler()', () => {
 
 describe('`startProxyServer()` starts the proxy server', () => {
   beforeEach(() => {
-    initDb();
+    clearCache();
   });
   afterEach(() => {
-    connect().close();
+    clearCache();
   });
 
   it('fetches data from the origin server', async () => {

@@ -5,7 +5,7 @@ import {
   NoOriginUrlError,
   RequestFailedError,
 } from '@/lib/errors';
-import { getOriginUrl, initDb, storeOriginUrl } from '@/dbServer';
+import { clearCache, getOriginUrl, setOriginUrl } from '@/lib/cacheManager';
 import express from 'express';
 import { Server } from 'node:http';
 
@@ -63,8 +63,8 @@ export const initExpress = () => {
 };
 
 export const startProxyServer = (port: number, origin: string): Server => {
-  initDb();
-  storeOriginUrl(origin);
+  clearCache();
+  setOriginUrl(origin);
 
   return initExpress().listen(port, () => {
     console.log(`Proxy server started on port ${port}. Origin: ${origin}`);
