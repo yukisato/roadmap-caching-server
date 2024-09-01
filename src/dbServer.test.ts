@@ -13,7 +13,7 @@ import {
   storeCache,
   storeOriginUrl,
 } from '@/dbServer';
-import { InvalidUrlError } from './lib/errors';
+import { InvalidUrlError } from '@/lib/errors';
 
 describe('`connect()` connects to the DB', () => {
   it('returns the same instance when it is called twice because it is a singleton', () => {
