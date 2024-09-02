@@ -19,9 +19,9 @@ export const connect = (() => {
 })();
 
 export const initDb = (): void => {
+  configureDb();
   transactionErrorHandler(
     connect().transaction(() => {
-      configureDb();
       createTableIfNotExists();
       createRecordIfNotExists();
       unsetPortNumber();
