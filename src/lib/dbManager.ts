@@ -5,7 +5,7 @@ export const options: Database.Options = {
   verbose: process.env.SQLITE_DEBUG ? console.log : undefined,
 };
 export const portConfigTableName = 'port_config';
-const dbFilename = path.resolve(__dirname, '../db.sqlite');
+const dbFilename = path.resolve(__dirname, '../../db.sqlite');
 
 export const connect = (() => {
   // Singleton instance
