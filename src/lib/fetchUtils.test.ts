@@ -1,12 +1,10 @@
-import { clearCache } from '@/lib/cacheManager';
+import { clearCache, getCache, setCache } from '@/lib/cacheManager';
+import { InvalidUrlError, RequestFailedError } from '@/lib/errors';
+import { callClearCacheApi, getCachedOrFetchUrl } from '@/lib/fetchUtils';
+import { ProxyServerCloser, startProxyServer } from '@/proxyServer';
 import assert from 'node:assert/strict';
 import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
-import { callClearCacheApi, getCachedOrFetchUrl } from '@/lib/fetchUtils';
-import { InvalidUrlError, RequestFailedError } from '@/lib/errors';
 import { v4 as uuidV4 } from 'uuid';
-import { getCache, setCache } from '@/lib/cacheManager';
-import { startProxyServer } from '@/proxyServer';
-import { Server } from 'node:http';
 
 describe('getCachedOrFetchUrl()', () => {
   beforeEach(() => {
@@ -53,17 +51,14 @@ describe('getCachedOrFetchUrl()', () => {
 });
 
 describe('callClearCacheApi() calls and clears the cache indirectly', () => {
-  let server: Server;
+  let closeProxyServer: ProxyServerCloser;
   before(async () => {
-    await new Promise((resolve) => {
-      server = startProxyServer(3010, 'https://github.com/yukisato', () =>
-        resolve(null)
-      );
-    });
+    closeProxyServer = (
+      await startProxyServer(3010, 'https://github.com/yukisato')
+    ).closeProxyServer;
   });
   after(async () => {
-    if (!server) return;
-    await new Promise((resolve) => server.close(() => resolve(null)));
+    await closeProxyServer();
   });
 
   it('deletes all the cache data', async () => {
