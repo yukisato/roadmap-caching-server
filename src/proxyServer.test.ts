@@ -11,6 +11,7 @@ import {
 } from '@/lib/cacheManager';
 import { v4 as uuidV4 } from 'uuid';
 import { Server } from 'node:http';
+import { unsetPortNumber } from './lib/dbManager';
 
 describe('`clearCacheHandler()` clears the cache', () => {
   it('clears the cache', async () => {
@@ -67,13 +68,13 @@ describe('`startProxyServer()` starts the proxy server', () => {
   let server: Server;
 
   before(async () => {
-    clearCache();
     await new Promise((resolve) => {
       server = startProxyServer(port, originUrl, () => resolve(null));
     });
   });
   after(async () => {
     clearCache();
+    unsetPortNumber();
     await new Promise((resolve) => server.close(() => resolve(null)));
   });
 

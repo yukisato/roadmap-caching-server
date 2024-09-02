@@ -8,7 +8,7 @@ import {
 import { clearCache, getOriginUrl, setOriginUrl } from '@/lib/cacheManager';
 import express from 'express';
 import { Server } from 'node:http';
-import { setPortNumber } from './lib/dbManager';
+import { initDb, setPortNumber } from './lib/dbManager';
 
 export const getHandler = async (
   req: Request,
@@ -73,8 +73,9 @@ export const startProxyServer = (
   origin: string,
   callback?: () => void
 ): Server => {
-  clearCache();
+  initDb();
   setPortNumber(port);
+  clearCache();
   setOriginUrl(origin);
 
   return initExpress().listen(port, () => {

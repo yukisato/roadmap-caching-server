@@ -24,6 +24,7 @@ export const initDb = (): void => {
       configureDb();
       createTableIfNotExists();
       createRecordIfNotExists();
+      unsetPortNumber();
     })
   );
 };
