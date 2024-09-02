@@ -2,10 +2,8 @@ import {
   clearCache,
   getCache,
   getOriginUrl,
-  getPort,
   setCache,
   setOriginUrl,
-  setPort,
 } from '@/lib/cacheManager';
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
@@ -34,17 +32,6 @@ describe('`clearCache()` removes the data in the cache', () => {
     setCache(expected.path, expected.data);
     clearCache();
     assert.equal(getCache(expected.path), null);
-  });
-});
-
-describe('`setCache()` and `getCache()` stores/retrieves the data in the cache', () => {
-  it('set and get the data in the cache', () => {
-    const expected = 3000;
-    clearCache();
-
-    assert.notEqual(getPort(), expected);
-    setPort(expected);
-    assert.equal(getPort(), expected);
   });
 });
 
