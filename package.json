@@ -7,7 +7,7 @@
   },
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "npm run clean && tsc -p ./tsconfig.build.json",
+    "build": "npm run clean && tsc -p ./tsconfig.build.json && tsc-alias -p ./tsconfig.build.json",
     "test": "node --test -r ts-node/regisster -r tsconfig-paths/register 'src/**/*.test.ts'",
     "prepare": "husky"
   },
@@ -33,6 +33,7 @@
     "prettier": "^3.3.3",
     "supertest": "^7.0.0",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.4",
     "uuid": "^10.0.0"
