@@ -23,6 +23,7 @@ export const initDb = (): void => {
     connect().transaction(() => {
       configureDb();
       createTableIfNotExists();
+      createRecordIfNotExists();
     })
   );
 };
@@ -44,6 +45,21 @@ export const createTableIfNotExists = (): void => {
       )`
     )
     .run();
+};
+
+export const createRecordIfNotExists = (): void => {
+  const db = connect();
+  const count =
+    db
+      .prepare<
+        [],
+        { count: number }
+      >(`SELECT COUNT(*) count FROM ${portConfigTableName}`)
+      .get()?.count ?? 0;
+  if (count === 0)
+    db.prepare(
+      `INSERT INTO ${portConfigTableName} (port_number) VALUES (null)`
+    ).run();
 };
 
 /**
