@@ -6,7 +6,7 @@ import {
   portConfigTableName,
   setPortNumber,
   unsetPortNumber,
-} from '@/dbServer';
+} from '@/lib/dbManager';
 import assert from 'node:assert/strict';
 import { after, before, beforeEach, describe, it } from 'node:test';
 
