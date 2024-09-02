@@ -8,7 +8,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc -p ./tsconfig.build.json && tsc-alias -p ./tsconfig.build.json",
-    "test": "node --test -r ts-node/regisster -r tsconfig-paths/register 'src/**/*.test.ts'",
+    "test": "node --test -r ts-node/register -r tsconfig-paths/register 'src/**/*.test.ts'",
     "prepare": "husky"
   },
   "lint-staged": {

@@ -5,14 +5,10 @@ import {
   NoOriginUrlError,
   RequestFailedError,
 } from '@/lib/errors';
-import {
-  clearCache,
-  getOriginUrl,
-  setOriginUrl,
-  setPort,
-} from '@/lib/cacheManager';
+import { clearCache, getOriginUrl, setOriginUrl } from '@/lib/cacheManager';
 import express from 'express';
 import { Server } from 'node:http';
+import { initDb, setPortNumber } from './lib/dbManager';
 
 export const getHandler = async (
   req: Request,
@@ -77,8 +73,9 @@ export const startProxyServer = (
   origin: string,
   callback?: () => void
 ): Server => {
+  initDb();
+  setPortNumber(port);
   clearCache();
-  setPort(port);
   setOriginUrl(origin);
 
   return initExpress().listen(port, () => {

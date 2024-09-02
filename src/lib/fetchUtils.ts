@@ -1,6 +1,7 @@
-import { getCache, getPort, setCache } from '@/lib/cacheManager';
+import { getCache, setCache } from '@/lib/cacheManager';
 import { z } from 'zod';
 import { InvalidUrlError, RequestFailedError } from '@/lib/errors';
+import { getPortNumber } from './dbManager';
 
 export type RetrieveResult = {
   data: string | null;
@@ -38,7 +39,7 @@ export const getCachedOrFetchUrl = async (
 };
 
 export const callClearCacheApi = async () => {
-  const apiUrl = `http://localhost:${getPort()}/clearCache`;
+  const apiUrl = `http://localhost:${getPortNumber()}/clearCache`;
   try {
     const response = await fetch(apiUrl);
     if (!response.ok) throw new RequestFailedError(response, apiUrl);
