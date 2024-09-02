@@ -62,6 +62,14 @@ export const createRecordIfNotExists = (): void => {
     ).run();
 };
 
+export const unsetPortNumber = (): void => {
+  connect()
+    .prepare(
+      `UPDATE ${portConfigTableName} SET port_number = null WHERE id = 1`
+    )
+    .run();
+};
+
 /**
  * Handles errors that occur within a database transaction.
  *

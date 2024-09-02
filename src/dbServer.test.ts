@@ -3,6 +3,7 @@ import {
   createRecordIfNotExists,
   createTableIfNotExists,
   portConfigTableName,
+  unsetPortNumber,
 } from '@/dbServer';
 import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
@@ -68,5 +69,30 @@ describe('`createRecordIfNotExists()` creates a record if not exists', () => {
       createRecordIfNotExists();
       assert.equal(stmt.get()?.count, 1);
     });
+  });
+});
+
+describe('`unsetPortNumber()` unsets the port config in the table', () => {
+  before(() => {
+    createTableIfNotExists();
+    createRecordIfNotExists();
+  });
+  after(() => {
+    connect().close();
+  });
+
+  it('sets null to the record in port_config table', () => {
+    const portNumber = 3010;
+    const db = connect();
+    db.prepare(`UPDATE ${portConfigTableName} SET port_number = ?`).run(
+      portNumber
+    );
+    const stmt = db.prepare<[], { port_number: number | null }>(
+      `SELECT port_number FROM ${portConfigTableName} WHERE id = 1`
+    );
+
+    assert.equal(stmt.get()?.port_number, portNumber);
+    unsetPortNumber();
+    assert.equal(stmt.get()?.port_number, null);
   });
 });
