@@ -1,17 +1,20 @@
-import assert from 'node:assert/strict';
-import { beforeEach, afterEach, describe, it, before, after } from 'node:test';
-import { clearCacheHandler, getHandler, startProxyServer } from '@/proxyServer';
-import express from 'express';
-import request from 'supertest';
 import {
   clearCache,
   getCache,
   setCache,
   setOriginUrl,
 } from '@/lib/cacheManager';
+import {
+  clearCacheHandler,
+  getHandler,
+  ProxyServerCloser,
+  startProxyServer,
+} from '@/proxyServer';
+import express from 'express';
+import assert from 'node:assert/strict';
+import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
+import request from 'supertest';
 import { v4 as uuidV4 } from 'uuid';
-import { Server } from 'node:http';
-import { unsetPortNumber } from './lib/dbManager';
 
 describe('`clearCacheHandler()` clears the cache', () => {
   it('clears the cache', async () => {
@@ -65,17 +68,14 @@ describe('`startProxyServer()` starts the proxy server', () => {
   const port = 3010;
   const originUrl = 'https://raw.githubusercontent.com';
   const path = '/yukisato/roadmap-caching-server/main/etc/test.json';
-  let server: Server;
+  let closeProxyServer: ProxyServerCloser;
 
   before(async () => {
-    await new Promise((resolve) => {
-      server = startProxyServer(port, originUrl, () => resolve(null));
-    });
+    closeProxyServer = (await startProxyServer(port, originUrl))
+      .closeProxyServer;
   });
   after(async () => {
-    clearCache();
-    unsetPortNumber();
-    await new Promise((resolve) => server.close(() => resolve(null)));
+    await closeProxyServer();
   });
 
   it('fetches data from the origin server', async () => {

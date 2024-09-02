@@ -1,14 +1,18 @@
-import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
-import { getCachedOrFetchUrl } from '@/lib/fetchUtils';
+import { clearCache, getOriginUrl, setOriginUrl } from '@/lib/cacheManager';
+import { initDb, setPortNumber, unsetPortNumber } from '@/lib/dbManager';
 import {
   InvalidUrlError,
   NoOriginUrlError,
   RequestFailedError,
 } from '@/lib/errors';
-import { clearCache, getOriginUrl, setOriginUrl } from '@/lib/cacheManager';
-import express from 'express';
+import { getCachedOrFetchUrl } from '@/lib/fetchUtils';
+import express, {
+  ErrorRequestHandler,
+  NextFunction,
+  Request,
+  Response,
+} from 'express';
 import { Server } from 'node:http';
-import { initDb, setPortNumber } from './lib/dbManager';
 
 export const getHandler = async (
   req: Request,
@@ -68,18 +72,47 @@ export const initExpress = () => {
   return app;
 };
 
-export const startProxyServer = (
+export type ProxyServerCloser = () => Promise<void>;
+export type StartProxyServerReturn = {
+  closeProxyServer: ProxyServerCloser;
+};
+export const startProxyServer = async (
   port: number,
-  origin: string,
-  callback?: () => void
-): Server => {
+  origin: string
+): Promise<StartProxyServerReturn> => {
   initDb();
   setPortNumber(port);
   clearCache();
   setOriginUrl(origin);
 
-  return initExpress().listen(port, () => {
-    console.log(`Proxy server started on port ${port}. Origin: ${origin}`);
-    if (callback) callback();
-  });
+  const app = initExpress();
+  let server: Server;
+  try {
+    await new Promise<void>((resolve, reject) => {
+      server = app
+        .listen(port)
+        .once('listening', () => {
+          console.log(`Server listening on port ${port}. Origin: ${origin}.`);
+          resolve();
+        })
+        .once('close', () => {
+          console.log(`Server closed.`);
+          reject();
+        });
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    } else {
+      console.error(error);
+    }
+  }
+
+  const closeProxyServer: ProxyServerCloser = async () => {
+    clearCache();
+    unsetPortNumber();
+    await new Promise((resolve) => server.close(resolve));
+  };
+
+  return { closeProxyServer };
 };
