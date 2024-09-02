@@ -70,6 +70,21 @@ export const unsetPortNumber = (): void => {
     .run();
 };
 
+export const setPortNumber = (portNumber: number): void => {
+  const db = connect();
+  db.prepare<[number]>(
+    `UPDATE ${portConfigTableName} set port_number = ? WHERE id = 1`
+  ).run(portNumber);
+};
+
+export const getPortNumber = (): number | null =>
+  connect()
+    .prepare<
+      [],
+      { port_number: number | null }
+    >(`SELECT port_number FROM ${portConfigTableName} WHERE id = 1`)
+    .get()?.port_number ?? null;
+
 /**
  * Handles errors that occur within a database transaction.
  *

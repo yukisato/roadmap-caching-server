@@ -2,11 +2,13 @@ import {
   connect,
   createRecordIfNotExists,
   createTableIfNotExists,
+  getPortNumber,
   portConfigTableName,
+  setPortNumber,
   unsetPortNumber,
 } from '@/dbServer';
 import assert from 'node:assert/strict';
-import { after, before, describe, it } from 'node:test';
+import { after, before, beforeEach, describe, it } from 'node:test';
 
 describe('`connect()` connects to the DB', () => {
   it('returns the same instance when it is called twice because it is a singleton', () => {
@@ -94,5 +96,34 @@ describe('`unsetPortNumber()` unsets the port config in the table', () => {
     assert.equal(stmt.get()?.port_number, portNumber);
     unsetPortNumber();
     assert.equal(stmt.get()?.port_number, null);
+  });
+});
+
+describe('`setPortNumber()` and `getPortNumber()` works as getter/setter using port_no table', () => {
+  before(() => {
+    createTableIfNotExists();
+    createRecordIfNotExists();
+  });
+  beforeEach(() => {
+    unsetPortNumber();
+  });
+  after(() => {
+    connect().close();
+  });
+
+  it('gets/sets the port number in the table', () => {
+    const portNumber = 3010;
+
+    assert.equal(getPortNumber(), null);
+    setPortNumber(portNumber);
+    assert.equal(getPortNumber(), portNumber);
+  });
+
+  it('can set 0 as the port number', () => {
+    const portNumber = 0;
+
+    assert.equal(getPortNumber(), null);
+    setPortNumber(portNumber);
+    assert.equal(getPortNumber(), portNumber);
   });
 });
