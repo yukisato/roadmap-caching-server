@@ -37,7 +37,7 @@ describe('`clearCache()` removes the data in the cache', () => {
 
 describe('`setOriginUrl()` and `getOriginUrl()` stores/retrieves the data in the originUrl', () => {
   it('set and get the data in the originUrl', () => {
-    const expected = 'https://github.com/' + uuidV4();
+    const expected = `https://github.com/${uuidV4()}`;
 
     assert.notEqual(getOriginUrl(), expected);
     setOriginUrl(expected);

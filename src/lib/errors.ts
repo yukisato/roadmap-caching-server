@@ -21,6 +21,6 @@ export class InvalidUrlError extends Error {
 
 export class NoOriginUrlError extends Error {
   constructor() {
-    super(`no origin URL is set in the cache`);
+    super('no origin URL is set in the cache');
   }
 }

@@ -7,7 +7,7 @@ import {
 import {
   clearCacheHandler,
   getHandler,
-  ProxyServerCloser,
+  type ProxyServerCloser,
   startProxyServer,
 } from '@/proxyServer';
 import express from 'express';

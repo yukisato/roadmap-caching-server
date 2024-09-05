@@ -7,12 +7,12 @@ import {
 } from '@/lib/errors';
 import { getCachedOrFetchUrl } from '@/lib/fetchUtils';
 import express, {
-  ErrorRequestHandler,
-  NextFunction,
-  Request,
-  Response,
+  type ErrorRequestHandler,
+  type NextFunction,
+  type Request,
+  type Response,
 } from 'express';
-import { Server } from 'node:http';
+import type { Server } from 'node:http';
 
 export const getHandler = async (
   req: Request,
@@ -96,7 +96,7 @@ export const startProxyServer = async (
           resolve();
         })
         .once('close', () => {
-          console.log(`Server closed.`);
+          console.log('Server closed.');
           reject();
         });
     });

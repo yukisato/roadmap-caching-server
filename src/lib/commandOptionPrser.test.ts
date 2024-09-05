@@ -15,7 +15,7 @@ describe('`getServerOptions()` parses the command line arguments', () => {
   });
 
   it('fails when passed "--port=non-numeric"', () => {
-    assert.equal(getServerOptions(['', '', `--port=non-numeric`]), undefined);
+    assert.equal(getServerOptions(['', '', '--port=non-numeric']), undefined);
   });
 
   it('fails when no arguments are passed', () => {
