@@ -1,3 +1,5 @@
+import assert from 'node:assert/strict';
+import { after, before, beforeEach, describe, it } from 'node:test';
 import {
   connect,
   createRecordIfNotExists,
@@ -7,8 +9,6 @@ import {
   setPortNumber,
   unsetPortNumber,
 } from '@/lib/dbManager';
-import assert from 'node:assert/strict';
-import { after, before, beforeEach, describe, it } from 'node:test';
 
 describe('`connect()` connects to the DB', () => {
   it('returns the same instance when it is called twice because it is a singleton', () => {
@@ -24,7 +24,7 @@ describe('`createTableIfNotExists()` creates tables', () => {
     db.prepare(`DROP TABLE IF EXISTS ${portConfigTableName}`).run();
 
     const stmt = db.prepare<[string], { name: string }>(
-      `SELECT name FROM sqlite_master WHERE type='table' AND name=?`
+      `SELECT name FROM sqlite_master WHERE type='table' AND name=?`,
     );
 
     assert.equal(stmt.get(portConfigTableName)?.name, undefined);
@@ -48,7 +48,7 @@ describe('`createRecordIfNotExists()` creates a record if not exists', () => {
       const db = connect();
       db.prepare(`DELETE FROM ${portConfigTableName}`).run();
       const stmt = db.prepare<[], { count: number }>(
-        `SELECT COUNT(*) count FROM ${portConfigTableName}`
+        `SELECT COUNT(*) count FROM ${portConfigTableName}`,
       );
 
       assert.equal(stmt.get()?.count, 0);
@@ -62,7 +62,7 @@ describe('`createRecordIfNotExists()` creates a record if not exists', () => {
       const db = connect();
       db.prepare(`DELETE FROM ${portConfigTableName}`).run();
       const stmt = db.prepare<[], { count: number }>(
-        `SELECT COUNT(*) count FROM ${portConfigTableName}`
+        `SELECT COUNT(*) count FROM ${portConfigTableName}`,
       );
 
       assert.equal(stmt.get()?.count, 0);
@@ -87,10 +87,10 @@ describe('`unsetPortNumber()` unsets the port config in the table', () => {
     const portNumber = 3010;
     const db = connect();
     db.prepare(`UPDATE ${portConfigTableName} SET port_number = ?`).run(
-      portNumber
+      portNumber,
     );
     const stmt = db.prepare<[], { port_number: number | null }>(
-      `SELECT port_number FROM ${portConfigTableName} WHERE id = 1`
+      `SELECT port_number FROM ${portConfigTableName} WHERE id = 1`,
     );
 
     assert.equal(stmt.get()?.port_number, portNumber);

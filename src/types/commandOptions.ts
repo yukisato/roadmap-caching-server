@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const serverOptionsSchema = z.object({
   port: z.string().transform((port, ctx) => {
-    if (!isNaN(Number(port))) return Number(port);
+    if (!Number.isNaN(Number(port))) return Number(port);
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: 'Port string must be numeric',

@@ -1,9 +1,9 @@
+import assert from 'node:assert/strict';
+import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
 import { clearCache, getCache, setCache } from '@/lib/cacheManager';
 import { InvalidUrlError, RequestFailedError } from '@/lib/errors';
 import { callClearCacheApi, getCachedOrFetchUrl } from '@/lib/fetchUtils';
-import { ProxyServerCloser, startProxyServer } from '@/proxyServer';
-import assert from 'node:assert/strict';
-import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
+import { type ProxyServerCloser, startProxyServer } from '@/proxyServer';
 import { v4 as uuidV4 } from 'uuid';
 
 describe('getCachedOrFetchUrl()', () => {
@@ -35,7 +35,7 @@ describe('getCachedOrFetchUrl()', () => {
     it('it throws InvalidUrlError when the uri is invalid ', async () => {
       assert.rejects(
         async () => await getCachedOrFetchUrl('invalid-url'),
-        InvalidUrlError
+        InvalidUrlError,
       );
     });
     it('it throws RequestFailedError when the uri is not found ', async () => {
@@ -44,7 +44,7 @@ describe('getCachedOrFetchUrl()', () => {
         'it-does-not-exist.txt';
       assert.rejects(
         async () => await getCachedOrFetchUrl(notExistUrl),
-        RequestFailedError
+        RequestFailedError,
       );
     });
   });
@@ -73,9 +73,9 @@ describe('callClearCacheApi() calls and clears the cache indirectly', () => {
         data: uuidV4(),
       },
     ];
-    testData.forEach(({ path, data }) => {
+    for (const { path, data } of testData) {
       setCache(path, data);
-    });
+    }
 
     assert.equal(getCache(testData[0].path), testData[0].data);
     assert.equal(getCache(testData[1].path), testData[1].data);

@@ -1,3 +1,4 @@
+import type { Server } from 'node:http';
 import { clearCache, getOriginUrl, setOriginUrl } from '@/lib/cacheManager';
 import { initDb, setPortNumber, unsetPortNumber } from '@/lib/dbManager';
 import {
@@ -7,24 +8,23 @@ import {
 } from '@/lib/errors';
 import { getCachedOrFetchUrl } from '@/lib/fetchUtils';
 import express, {
-  ErrorRequestHandler,
-  NextFunction,
-  Request,
-  Response,
+  type ErrorRequestHandler,
+  type NextFunction,
+  type Request,
+  type Response,
 } from 'express';
-import { Server } from 'node:http';
 
 export const getHandler = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const origin = getOriginUrl();
   if (!origin) return next(new NoOriginUrlError());
 
   try {
     const { data, isCache } = await getCachedOrFetchUrl(
-      origin + req.originalUrl
+      origin + req.originalUrl,
     );
     res
       .append('X-Cache', isCache ? 'HIT' : 'MISS')
@@ -43,7 +43,7 @@ export const clearCacheHandler = async (_: Request, res: Response) => {
 export const errorMiddleware: ErrorRequestHandler = (
   err: Error,
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   if (err instanceof RequestFailedError) {
     console.error(err.message);
@@ -78,7 +78,7 @@ export type StartProxyServerReturn = {
 };
 export const startProxyServer = async (
   port: number,
-  origin: string
+  origin: string,
 ): Promise<StartProxyServerReturn> => {
   let server: Server;
   try {
@@ -96,7 +96,7 @@ export const startProxyServer = async (
           resolve();
         })
         .once('close', () => {
-          console.log(`Server closed.`);
+          console.log('Server closed.');
           reject();
         });
     });

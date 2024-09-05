@@ -1,6 +1,6 @@
 import { getCache, setCache } from '@/lib/cacheManager';
-import { z } from 'zod';
 import { InvalidUrlError, RequestFailedError } from '@/lib/errors';
+import { z } from 'zod';
 import { getPortNumber } from './dbManager';
 
 export type RetrieveResult = {
@@ -11,7 +11,7 @@ export type RetrieveResult = {
 export const urlStringSchema = z.string().url();
 
 export const getCachedOrFetchUrl = async (
-  urlString: string
+  urlString: string,
 ): Promise<RetrieveResult> => {
   const { success, data } = urlStringSchema.safeParse(urlString);
   if (!success) throw new InvalidUrlError(urlString);

@@ -1,9 +1,9 @@
+import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import {
   getOperationalOptions,
   getServerOptions,
 } from '@/lib/commandOptionPrser';
-import assert from 'node:assert/strict';
 
 describe('`getServerOptions()` parses the command line arguments', () => {
   it('succeeds in parsing the fullfilled command line arguments', () => {
@@ -15,7 +15,7 @@ describe('`getServerOptions()` parses the command line arguments', () => {
   });
 
   it('fails when passed "--port=non-numeric"', () => {
-    assert.equal(getServerOptions(['', '', `--port=non-numeric`]), undefined);
+    assert.equal(getServerOptions(['', '', '--port=non-numeric']), undefined);
   });
 
   it('fails when no arguments are passed', () => {

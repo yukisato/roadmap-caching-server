@@ -1,10 +1,10 @@
 export class RequestFailedError extends Error {
   constructor(
     protected response: Response,
-    protected urlString: string
+    protected urlString: string,
   ) {
     super(
-      `request failed: ${response.status} ${response.statusText} ${urlString}`
+      `request failed: ${response.status} ${response.statusText} ${urlString}`,
     );
   }
 
@@ -21,6 +21,6 @@ export class InvalidUrlError extends Error {
 
 export class NoOriginUrlError extends Error {
   constructor() {
-    super(`no origin URL is set in the cache`);
+    super('no origin URL is set in the cache');
   }
 }
