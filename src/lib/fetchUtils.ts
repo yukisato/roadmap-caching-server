@@ -23,8 +23,9 @@ export const getCachedOrFetchUrl = async (
   if (cache) return { data: cache, isCache: true };
 
   // If the path is NOT in the cache, fetch and return the data
+  let response: Response;
   try {
-    const response = await fetch(url);
+    response = await fetch(url);
     if (response.ok) {
       const data = await response.text();
       setCache(path, data);
@@ -34,7 +35,8 @@ export const getCachedOrFetchUrl = async (
     // If the request fails, throw an error
     throw new RequestFailedError(response, urlString);
   } catch (error) {
-    throw error;
+    if (error instanceof Error) throw error;
+    throw new Error(`Unknown error: ${String(error)}`);
   }
 };
 
@@ -44,6 +46,7 @@ export const callClearCacheApi = async () => {
     const response = await fetch(apiUrl);
     if (!response.ok) throw new RequestFailedError(response, apiUrl);
   } catch (error) {
-    throw error;
+    if (error instanceof Error) throw error;
+    throw new Error(`Unknown error: ${String(error)}`);
   }
 };

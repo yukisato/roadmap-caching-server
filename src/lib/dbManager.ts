@@ -96,12 +96,13 @@ export const transactionErrorHandler = (transaction: Database.Transaction) => {
     if (error instanceof SqliteError) {
       console.error(error.code, error.name, error.message);
       throw error;
-    } else if (error instanceof Error) {
+    }
+    if (error instanceof Error) {
       console.error(error.message);
       throw error;
-    } else {
-      console.error(error);
-      throw new Error(String(error));
     }
+
+    console.error(error);
+    throw new Error(String(error));
   }
 };
