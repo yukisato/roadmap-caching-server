@@ -1,10 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "rootDir": "./src" /* Specify the root folder within your source files. */,
-    "outDir": "./dist" /* Specify an output folder for all emitted files. */,
-    "declaration": false /* Emit a declaration file for each emitted TS file. */,
-    "sourceMap": false /* Generates corresponding '.map' file. */
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declaration": false,
+    "sourceMap": false
   },
   "include": ["src/**/*.ts"],
   "exclude": ["**/*.test.ts"]
