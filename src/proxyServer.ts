@@ -80,14 +80,14 @@ export const startProxyServer = async (
   port: number,
   origin: string
 ): Promise<StartProxyServerReturn> => {
-  initDb();
-  setPortNumber(port);
-  clearCache();
-  setOriginUrl(origin);
-
-  const app = initExpress();
   let server: Server;
   try {
+    initDb();
+    setPortNumber(port);
+    clearCache();
+    setOriginUrl(origin);
+
+    const app = initExpress();
     await new Promise<void>((resolve, reject) => {
       server = app
         .listen(port)
@@ -104,7 +104,7 @@ export const startProxyServer = async (
     if (error instanceof Error) {
       console.error(error.message);
     } else {
-      console.error(error);
+      console.error(`Unknown error: ${String(error)}`);
     }
   }
 
