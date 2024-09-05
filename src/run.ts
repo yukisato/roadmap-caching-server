@@ -2,9 +2,9 @@ import {
   getOperationalOptions,
   getServerOptions,
 } from '@/lib/commandOptionPrser';
-import { program } from 'commander';
-import { startProxyServer } from '@/proxyServer';
 import { callClearCacheApi } from '@/lib/fetchUtils';
+import { startProxyServer } from '@/proxyServer';
+import { program } from 'commander';
 
 export const run = async (argv: string[]) => {
   // Operate the proxy server if the command line arguments are for the operations

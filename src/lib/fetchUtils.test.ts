@@ -1,9 +1,9 @@
+import assert from 'node:assert/strict';
+import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
 import { clearCache, getCache, setCache } from '@/lib/cacheManager';
 import { InvalidUrlError, RequestFailedError } from '@/lib/errors';
 import { callClearCacheApi, getCachedOrFetchUrl } from '@/lib/fetchUtils';
 import { type ProxyServerCloser, startProxyServer } from '@/proxyServer';
-import assert from 'node:assert/strict';
-import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
 import { v4 as uuidV4 } from 'uuid';
 
 describe('getCachedOrFetchUrl()', () => {

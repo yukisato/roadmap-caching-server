@@ -1,5 +1,5 @@
-import Database, { SqliteError } from 'better-sqlite3';
 import path from 'node:path';
+import Database, { SqliteError } from 'better-sqlite3';
 
 export const options: Database.Options = {
   verbose: process.env.SQLITE_DEBUG ? console.log : undefined,

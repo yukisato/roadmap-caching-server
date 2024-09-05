@@ -1,3 +1,5 @@
+import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 import {
   clearCache,
   getCache,
@@ -5,8 +7,6 @@ import {
   setCache,
   setOriginUrl,
 } from '@/lib/cacheManager';
-import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
 import { v4 as uuidV4 } from 'uuid';
 
 describe('`setCache()` and `getCache()` stores/retrieves the data in the cache', () => {

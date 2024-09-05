@@ -1,3 +1,4 @@
+import type { Server } from 'node:http';
 import { clearCache, getOriginUrl, setOriginUrl } from '@/lib/cacheManager';
 import { initDb, setPortNumber, unsetPortNumber } from '@/lib/dbManager';
 import {
@@ -12,7 +13,6 @@ import express, {
   type Request,
   type Response,
 } from 'express';
-import type { Server } from 'node:http';
 
 export const getHandler = async (
   req: Request,

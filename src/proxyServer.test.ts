@@ -1,3 +1,5 @@
+import assert from 'node:assert/strict';
+import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
 import {
   clearCache,
   getCache,
@@ -5,14 +7,12 @@ import {
   setOriginUrl,
 } from '@/lib/cacheManager';
 import {
+  type ProxyServerCloser,
   clearCacheHandler,
   getHandler,
-  type ProxyServerCloser,
   startProxyServer,
 } from '@/proxyServer';
 import express from 'express';
-import assert from 'node:assert/strict';
-import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
 import request from 'supertest';
 import { v4 as uuidV4 } from 'uuid';
 

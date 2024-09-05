@@ -1,3 +1,5 @@
+import assert from 'node:assert/strict';
+import { after, before, beforeEach, describe, it } from 'node:test';
 import {
   connect,
   createRecordIfNotExists,
@@ -7,8 +9,6 @@ import {
   setPortNumber,
   unsetPortNumber,
 } from '@/lib/dbManager';
-import assert from 'node:assert/strict';
-import { after, before, beforeEach, describe, it } from 'node:test';
 
 describe('`connect()` connects to the DB', () => {
   it('returns the same instance when it is called twice because it is a singleton', () => {
