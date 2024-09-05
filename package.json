@@ -14,9 +14,7 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{ts,js}": [
-      "npm run check:fix"
-    ]
+    "*.{ts,js}": ["npm run check:fix"]
   },
   "author": {
     "name": "Yuki Sato",
