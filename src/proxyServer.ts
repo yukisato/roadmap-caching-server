@@ -17,14 +17,14 @@ import { Server } from 'node:http';
 export const getHandler = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const origin = getOriginUrl();
   if (!origin) return next(new NoOriginUrlError());
 
   try {
     const { data, isCache } = await getCachedOrFetchUrl(
-      origin + req.originalUrl
+      origin + req.originalUrl,
     );
     res
       .append('X-Cache', isCache ? 'HIT' : 'MISS')
@@ -43,7 +43,7 @@ export const clearCacheHandler = async (_: Request, res: Response) => {
 export const errorMiddleware: ErrorRequestHandler = (
   err: Error,
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   if (err instanceof RequestFailedError) {
     console.error(err.message);
@@ -78,7 +78,7 @@ export type StartProxyServerReturn = {
 };
 export const startProxyServer = async (
   port: number,
-  origin: string
+  origin: string,
 ): Promise<StartProxyServerReturn> => {
   initDb();
   setPortNumber(port);

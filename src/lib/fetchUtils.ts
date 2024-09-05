@@ -11,7 +11,7 @@ export type RetrieveResult = {
 export const urlStringSchema = z.string().url();
 
 export const getCachedOrFetchUrl = async (
-  urlString: string
+  urlString: string,
 ): Promise<RetrieveResult> => {
   const { success, data } = urlStringSchema.safeParse(urlString);
   if (!success) throw new InvalidUrlError(urlString);

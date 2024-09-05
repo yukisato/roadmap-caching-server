@@ -25,7 +25,7 @@ export const initDb = (): void => {
       createTableIfNotExists();
       createRecordIfNotExists();
       unsetPortNumber();
-    })
+    }),
   );
 };
 
@@ -43,7 +43,7 @@ export const createTableIfNotExists = (): void => {
       `CREATE TABLE IF NOT EXISTS ${portConfigTableName} (
         id INTEGER PRIMARY KEY CHECK (id = 1),
         port_number INTEGER CHECK (port_number BETWEEN 0 AND 65535)
-      )`
+      )`,
     )
     .run();
 };
@@ -52,21 +52,20 @@ export const createRecordIfNotExists = (): void => {
   const db = connect();
   const count =
     db
-      .prepare<
-        [],
-        { count: number }
-      >(`SELECT COUNT(*) count FROM ${portConfigTableName}`)
+      .prepare<[], { count: number }>(
+        `SELECT COUNT(*) count FROM ${portConfigTableName}`,
+      )
       .get()?.count ?? 0;
   if (count === 0)
     db.prepare(
-      `INSERT INTO ${portConfigTableName} (port_number) VALUES (null)`
+      `INSERT INTO ${portConfigTableName} (port_number) VALUES (null)`,
     ).run();
 };
 
 export const unsetPortNumber = (): void => {
   connect()
     .prepare(
-      `UPDATE ${portConfigTableName} SET port_number = null WHERE id = 1`
+      `UPDATE ${portConfigTableName} SET port_number = null WHERE id = 1`,
     )
     .run();
 };
@@ -74,16 +73,15 @@ export const unsetPortNumber = (): void => {
 export const setPortNumber = (portNumber: number): void => {
   const db = connect();
   db.prepare<[number]>(
-    `UPDATE ${portConfigTableName} set port_number = ? WHERE id = 1`
+    `UPDATE ${portConfigTableName} set port_number = ? WHERE id = 1`,
   ).run(portNumber);
 };
 
 export const getPortNumber = (): number | null =>
   connect()
-    .prepare<
-      [],
-      { port_number: number | null }
-    >(`SELECT port_number FROM ${portConfigTableName} WHERE id = 1`)
+    .prepare<[], { port_number: number | null }>(
+      `SELECT port_number FROM ${portConfigTableName} WHERE id = 1`,
+    )
     .get()?.port_number ?? null;
 
 /**

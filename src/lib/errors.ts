@@ -1,10 +1,10 @@
 export class RequestFailedError extends Error {
   constructor(
     protected response: Response,
-    protected urlString: string
+    protected urlString: string,
   ) {
     super(
-      `request failed: ${response.status} ${response.statusText} ${urlString}`
+      `request failed: ${response.status} ${response.statusText} ${urlString}`,
     );
   }
 

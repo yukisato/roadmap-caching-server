@@ -35,7 +35,7 @@ describe('getCachedOrFetchUrl()', () => {
     it('it throws InvalidUrlError when the uri is invalid ', async () => {
       assert.rejects(
         async () => await getCachedOrFetchUrl('invalid-url'),
-        InvalidUrlError
+        InvalidUrlError,
       );
     });
     it('it throws RequestFailedError when the uri is not found ', async () => {
@@ -44,7 +44,7 @@ describe('getCachedOrFetchUrl()', () => {
         'it-does-not-exist.txt';
       assert.rejects(
         async () => await getCachedOrFetchUrl(notExistUrl),
-        RequestFailedError
+        RequestFailedError,
       );
     });
   });
