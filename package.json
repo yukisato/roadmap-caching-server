@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "bin": {
-    "task-cli": "bin/caching-proxy"
+    "caching-proxy": "./bin/caching-proxy"
   },
   "scripts": {
     "clean": "rm -rf dist",
