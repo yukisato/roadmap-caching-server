@@ -9,13 +9,13 @@
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc -p ./tsconfig.build.json && tsc-alias -p ./tsconfig.build.json",
     "test": "node --test -r ts-node/register -r tsconfig-paths/register 'src/**/*.test.ts'",
-    "format": "biome format --write './src/'",
-    "lint": "biome lint --write './src/'",
+    "check": "biome check './src/'",
+    "check:fix": "biome check --write './src/'",
     "prepare": "husky"
   },
   "lint-staged": {
     "*.{ts,js}": [
-      "npm run format"
+      "npm run check:fix"
     ]
   },
   "author": {
