@@ -14,13 +14,12 @@ import {
 } from '@/proxyServer';
 import express from 'express';
 import request from 'supertest';
-import { v4 as uuidV4 } from 'uuid';
 
 describe('`clearCacheHandler()` clears the cache', () => {
   it('clears the cache', async () => {
     const testData = {
       path: '/path/to/target.html',
-      data: uuidV4(),
+      data: 'test data',
     };
 
     const app = express();

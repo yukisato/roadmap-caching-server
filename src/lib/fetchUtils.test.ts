@@ -9,10 +9,9 @@ import {
   mock,
 } from 'node:test';
 import { clearCache, getCache, setCache } from '@/lib/cacheManager';
-import { InvalidUrlError, RequestFailedError } from '@/lib/errors';
+import { RequestFailedError } from '@/lib/errors';
 import { callClearCacheApi, getCachedOrFetchUrl } from '@/lib/fetchUtils';
 import { type ProxyServerCloser, startProxyServer } from '@/proxyServer';
-import { v4 as uuidV4 } from 'uuid';
 
 describe('getCachedOrFetchUrl()', () => {
   beforeEach(() => {
@@ -82,11 +81,11 @@ describe('callClearCacheApi() calls and clears the cache indirectly', () => {
     const testData = [
       {
         path: '/path/to/target.html',
-        data: uuidV4(),
+        data: 'test data 1',
       },
       {
         path: '/path/to/target2.html',
-        data: uuidV4(),
+        data: 'test data 2',
       },
     ];
     for (const { path, data } of testData) {
