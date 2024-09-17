@@ -1,5 +1,13 @@
 import assert from 'node:assert/strict';
-import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
+import {
+  after,
+  afterEach,
+  before,
+  beforeEach,
+  describe,
+  it,
+  mock,
+} from 'node:test';
 import { clearCache, getCache, setCache } from '@/lib/cacheManager';
 import { InvalidUrlError, RequestFailedError } from '@/lib/errors';
 import { callClearCacheApi, getCachedOrFetchUrl } from '@/lib/fetchUtils';
@@ -15,10 +23,18 @@ describe('getCachedOrFetchUrl()', () => {
   });
 
   describe('when data is in the cache', () => {
-    it('returns actual data with `isCache: false` first, then returns the data with `isCache: true` when it is called again', async () => {
+    it('returns actual data with `isCache: false` first, then returns the data with `isCache: true` for the second request', async () => {
       const url =
         'https://raw.githubusercontent.com/yukisato/roadmap-caching-server/main/etc/test.json';
-      const expectedData = await (await fetch(url)).text();
+      const expectedData = 'test data';
+      mock.method(globalThis, 'fetch', (internalUrl: URL) => {
+        assert.deepEqual(new URL(url), internalUrl);
+
+        return {
+          ok: true,
+          text: async () => expectedData,
+        };
+      });
 
       assert.deepEqual(await getCachedOrFetchUrl(url), {
         isCache: false,
@@ -36,6 +52,12 @@ describe('getCachedOrFetchUrl()', () => {
       const notExistUrl =
         'https://github.com/yukisato/roadmap-caching-server/blob/main/' +
         'it-does-not-exist.txt';
+      mock.method(globalThis, 'fetch', (url: URL) => {
+        assert.deepEqual(new URL(notExistUrl), url);
+
+        return { ok: false };
+      });
+
       assert.rejects(
         async () => await getCachedOrFetchUrl(notExistUrl),
         RequestFailedError,
