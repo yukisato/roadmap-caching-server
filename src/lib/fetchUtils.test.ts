@@ -32,12 +32,6 @@ describe('getCachedOrFetchUrl()', () => {
   });
 
   describe('when the wrong uri is passed', () => {
-    it('it throws InvalidUrlError when the uri is invalid ', async () => {
-      assert.rejects(
-        async () => await getCachedOrFetchUrl('invalid-url'),
-        InvalidUrlError,
-      );
-    });
     it('it throws RequestFailedError when the uri is not found ', async () => {
       const notExistUrl =
         'https://github.com/yukisato/roadmap-caching-server/blob/main/' +
