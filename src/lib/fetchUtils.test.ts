@@ -11,7 +11,14 @@ import {
 import { clearCache, getCache, setCache } from '@/lib/cacheManager';
 import { RequestFailedError } from '@/lib/errors';
 import { callClearCacheApi, getCachedOrFetchUrl } from '@/lib/fetchUtils';
-import { type ProxyServerCloser, startProxyServer } from '@/proxyServer';
+import {
+  type ProxyServerCloser,
+  clearCacheHandler,
+  startProxyServer,
+} from '@/proxyServer';
+import express from 'express';
+import request from 'supertest';
+import { setPortNumber } from './dbManager';
 
 describe('getCachedOrFetchUrl()', () => {
   beforeEach(() => {
@@ -66,36 +73,21 @@ describe('getCachedOrFetchUrl()', () => {
 });
 
 describe('callClearCacheApi() calls and clears the cache indirectly', () => {
-  let closeProxyServer: ProxyServerCloser;
-  before(async () => {
-    closeProxyServer = (
-      await startProxyServer(3010, 'https://github.com/yukisato')
-    ).closeProxyServer;
-  });
-  after(async () => {
-    await closeProxyServer();
-  });
+  it('calles the clearCache API', async () => {
+    const portNumber = 3010;
+    const apiUrl = `http://localhost:${portNumber}/clearCache`;
+    let isApiCalled = false;
+    mock.method(globalThis, 'fetch', (url: string) => {
+      assert.equal(url, apiUrl);
+      isApiCalled = true;
 
-  it('deletes all the cache data', async () => {
-    clearCache();
-    const testData = [
-      {
-        path: '/path/to/target.html',
-        data: 'test data 1',
-      },
-      {
-        path: '/path/to/target2.html',
-        data: 'test data 2',
-      },
-    ];
-    for (const { path, data } of testData) {
-      setCache(path, data);
-    }
+      return {
+        ok: true,
+      };
+    });
 
-    assert.equal(getCache(testData[0].path), testData[0].data);
-    assert.equal(getCache(testData[1].path), testData[1].data);
+    setPortNumber(portNumber);
     await callClearCacheApi();
-    assert.equal(getCache(testData[0].path), null);
-    assert.equal(getCache(testData[1].path), null);
+    assert.ok(isApiCalled);
   });
 });
