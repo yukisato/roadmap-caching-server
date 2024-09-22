@@ -1,23 +1,8 @@
 import assert from 'node:assert/strict';
-import {
-  after,
-  afterEach,
-  before,
-  beforeEach,
-  describe,
-  it,
-  mock,
-} from 'node:test';
-import { clearCache, getCache, setCache } from '@/lib/cacheManager';
+import { afterEach, beforeEach, describe, it, mock } from 'node:test';
+import { clearCache } from '@/lib/cacheManager';
 import { RequestFailedError } from '@/lib/errors';
 import { callClearCacheApi, getCachedOrFetchUrl } from '@/lib/fetchUtils';
-import {
-  type ProxyServerCloser,
-  clearCacheHandler,
-  startProxyServer,
-} from '@/proxyServer';
-import express from 'express';
-import request from 'supertest';
 import { setPortNumber } from './dbManager';
 
 describe('getCachedOrFetchUrl()', () => {

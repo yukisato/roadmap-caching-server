@@ -1,4 +1,3 @@
-import type { Server } from 'node:http';
 import { clearCache, getOriginUrl, setOriginUrl } from '@/lib/cacheManager';
 import { initDb, setPortNumber, unsetPortNumber } from '@/lib/dbManager';
 import {
@@ -72,15 +71,7 @@ export const initExpress = () => {
   return app;
 };
 
-export type ProxyServerCloser = () => Promise<void>;
-export type StartProxyServerReturn = {
-  closeProxyServer: ProxyServerCloser;
-};
-export const startProxyServer = async (
-  port: number,
-  origin: string,
-): Promise<StartProxyServerReturn> => {
-  let server: Server;
+export const startProxyServer = (port: number, origin: string): void => {
   try {
     initDb();
     setPortNumber(port);
@@ -88,31 +79,23 @@ export const startProxyServer = async (
     setOriginUrl(origin);
 
     const app = initExpress();
-    await new Promise<void>((resolve, reject) => {
-      server = app
-        .listen(port)
-        .once('listening', () => {
-          console.log(`Server listening on port ${port}. Origin: ${origin}.`);
-          resolve();
-        })
-        .once('close', () => {
-          console.log('Server closed.');
-          reject();
-        });
-    });
+    app
+      .listen(port)
+      .on('error', (error: Error) => {
+        console.error(error.message);
+      })
+      .once('listening', () => {
+        console.log(`Server listening on port ${port}. Origin: ${origin}.`);
+      })
+      .once('close', () => {
+        console.log('Server closed.');
+      });
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);
     } else {
       console.error(`Unknown error: ${String(error)}`);
     }
+    process.exit(1);
   }
-
-  const closeProxyServer: ProxyServerCloser = async () => {
-    clearCache();
-    unsetPortNumber();
-    await new Promise((resolve) => server.close(resolve));
-  };
-
-  return { closeProxyServer };
 };
